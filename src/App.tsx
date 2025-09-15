@@ -1,15 +1,13 @@
 import { View } from "@wuhhh/view-webgpu";
-import { CameraControls, Grid, PerspectiveCamera } from "@react-three/drei";
+import { CameraControls } from "@react-three/drei";
 import { useControls } from "leva";
 import Scene from "./components/Scene";
 import WebGPUCanvas from "./components/WebGPUCanvas";
+import { ControlScene } from "./components/control/ControlScene";
 
 function App() {
-    const { backgroundColor, gridSize, gridDivisions, showGrid } = useControls({
+    const { backgroundColor } = useControls({
         backgroundColor: "#1a1a1a",
-        gridSize: { value: 10, min: 5, max: 20 },
-        gridDivisions: { value: 10, min: 5, max: 20 },
-        showGrid: true,
     });
 
     return (
@@ -46,6 +44,7 @@ function App() {
                 {/* Grid */}
 
                 {/* Camera Controls */}
+                <ControlScene />
 
                 <Scene />
             </View>
@@ -62,10 +61,6 @@ function App() {
                 }}>
                 <ambientLight intensity={0.4} />
                 <directionalLight position={[5, 5, 5]} intensity={1.0} />
-                <mesh>
-                    <boxGeometry />
-                    <meshStandardMaterial color='orange' />
-                </mesh>
             </View>
         </div>
     );
