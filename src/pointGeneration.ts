@@ -174,6 +174,7 @@ function createPointTracker(pointsArray: number[][]) {
         last: () => pointsArray[pointsArray.length - 1],
         push: (point: number[]) => pointsArray.push(point),
         pushArray: (x: number, y: number) => pointsArray.push([x, y]),
+        pushWithId: (x: number, y: number, id: number) => pointsArray.push([x, y, id]),
     };
 }
 
@@ -184,7 +185,8 @@ function createPointTracker(pointsArray: number[][]) {
 function attachTransformed(
     mainPoints: number[][],
     currentPosition: number[],
-    pointsToTransform: number[][]
+    pointsToTransform: number[][],
+    sectionId?: number
 ): number[] {
     let finalPosition = [...currentPosition];
 
@@ -192,10 +194,16 @@ function attachTransformed(
     for (let i = 1; i < pointsToTransform.length; i++) {
         const point = pointsToTransform[i];
         // Transform point relative to current position
-        const transformedPoint = [
-            currentPosition[0] + point[0],
-            currentPosition[1] + point[1],
-        ];
+        const transformedPoint = sectionId === undefined
+            ? [
+                currentPosition[0] + point[0],
+                currentPosition[1] + point[1],
+            ]
+            : [
+                currentPosition[0] + point[0],
+                currentPosition[1] + point[1],
+                sectionId,
+            ];
 
         // Add to main points array
         mainPoints.push(transformedPoint);
@@ -412,7 +420,7 @@ export function mergeConfigs(config1: Partial<AdvancedConfig>, config2: Partial<
 export function generateRawPoints(config: AdvancedConfig): number[][] {
     const points: number[][] = [];
     // attach the helper
-    const { last, pushArray } = createPointTracker(points);
+    const { last, pushWithId } = createPointTracker(points);
 
     // the final point will be the origin + height + peak
     const finalPosition = [
@@ -422,22 +430,24 @@ export function generateRawPoints(config: AdvancedConfig): number[][] {
     let floorLength = config.root?.radius || 0;
     // if we have a pedestal, move up pedestal height
     if (config.pedestal?.height && config.pedestal.height > 0) {
-        pushArray(0, config.pedestal.height);
+        // section 0: pedestal
+        pushWithId(0, config.pedestal.height, 0);
         // attach the pedestal points
         if (config.pedestal.points) {
-            attachTransformed(points, last(), config.pedestal.points);
+            attachTransformed(points, last(), config.pedestal.points, 0);
         }
         // subtract the pedestal radius from the floor length
         floorLength -= config.pedestal.radius || 0;
     } else {
         //start at origin
-        pushArray(0, 0);
+        pushWithId(0, 0, 1); // section 1: floor
     }
     // extend out from the last position floorLength at the floor angle
     const floorAngle = config.root?.floorAngle || 0;
-    pushArray(
+    pushWithId(
         floorLength * Math.cos(floorAngle),
-        floorLength * Math.sin(floorAngle)
+        floorLength * Math.sin(floorAngle),
+        1 // section 1: floor
     );
     // if we have a bottom corner, apply
     if (
@@ -445,11 +455,11 @@ export function generateRawPoints(config: AdvancedConfig): number[][] {
         config.bottomCorner.radius > 0 &&
         config.bottomCorner.points
     ) {
-        attachTransformed(points, last(), config.bottomCorner.points);
+        attachTransformed(points, last(), config.bottomCorner.points, 2); // section 2: bottomCorner
     }
     // now we are at the top of the corner and attach the wall points
     if (config.wall?.points && config.wall.height) {
-        attachTransformed(points, last(), config.wall.points);
+        attachTransformed(points, last(), config.wall.points, 3); // section 3: wall
     }
     // now we are at the top of the wall and attach the top corner points
     if (
@@ -457,7 +467,7 @@ export function generateRawPoints(config: AdvancedConfig): number[][] {
         config.topCorner.radius > 0 &&
         config.topCorner.points
     ) {
-        attachTransformed(points, last(), config.topCorner.points);
+        attachTransformed(points, last(), config.topCorner.points, 4); // section 4: topCorner
     }
     // this is edge of the ceiling
     const ceilingEdge = last();
@@ -478,15 +488,15 @@ export function generateRawPoints(config: AdvancedConfig): number[][] {
         ceilingLength -= config.soffit.radius;
     }
     // extend out from last point at the ceilingAngle through the ceilingLength
-    pushArray(last()[0] + ceilingLength * Math.cos(ceilingAngle), last()[1] + ceilingLength * Math.sin(ceilingAngle));
+    pushWithId(last()[0] + ceilingLength * Math.cos(ceilingAngle), last()[1] + ceilingLength * Math.sin(ceilingAngle), 5); // section 5: ceiling
 
     // add the soffit points
     if (config.soffit?.points && config.soffit.points.length > 0) {
-        attachTransformed(points, last(), config.soffit.points);
+        attachTransformed(points, last(), config.soffit.points, 6); // section 6: soffit
     }
     // add the skylight points
     if (config.skylight?.points && config.skylight.points.length > 0) {
-        attachTransformed(points, last(), config.skylight.points);
+        attachTransformed(points, last(), config.skylight.points, 7); // section 7: skylight
     }
     //because of the skylight we probably arent at the final position and thats ok
 

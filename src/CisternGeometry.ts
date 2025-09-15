@@ -3,6 +3,7 @@
 
 
 import { Float32BufferAttribute, BufferGeometry, Vector2, Vector3, MathUtils } from "three/webgpu";
+import { AdvancedConfig, generateRawPoints } from "./pointGeneration";
 
 /**
  * Creates meshes with axial symmetry like vases. The lathe rotates around the Y axis.
@@ -29,23 +30,27 @@ export class CisternGeometry extends BufferGeometry {
     };
 
     declare type: string;
-
+    activeConfig: AdvancedConfig;
+    activeGenerationPoints: Vector2[];
+    activeSegmentMap: number[];
     /**
      * Constructs a new lathe geometry.
      *
      * @param {Array<Vector2|Vector3>} [points] - An array of points in 2D space. The x-coordinate of each point
      * must be greater than zero.
-     * @param {number} [segments=12] - The number of circumference segments to generate.
+     * @param {number} [segments=24] - The number of circumference segments to generate.
      * @param {number} [phiStart=0] - The starting angle in radians.
      * @param {number} [phiLength=Math.PI*2] - The radian (0 to 2PI) range of the lathed section 2PI is a
      * closed lathe, less than 2PI is a portion.
      */
-    constructor(points = [new Vector2(0, - 0.5), new Vector2(0.5, 0), new Vector2(0, 0.5)], segments = 12, phiStart = 0, phiLength = Math.PI * 2) {
+    constructor(points = [new Vector2(0, - 0.5), new Vector2(0.5, 0), new Vector2(0, 0.5)], segments = 36, phiStart = 0, phiLength = Math.PI * 2) {
 
         super();
 
         this.type = 'CisternGeometry';
-
+        this.activeConfig = {};
+        this.activeGenerationPoints = [];
+        this.activeSegmentMap = [];
         /**
          * Holds the constructor parameters that have been
          * used to generate the geometry. Any modification
@@ -60,22 +65,56 @@ export class CisternGeometry extends BufferGeometry {
             phiLength: phiLength
         };
 
-        segments = Math.floor(segments);
+        // initial build
+        this.generateFromPoints(points);
 
-        // clamp phiLength so it's in range of [ 0, 2PI ]
+    }
 
-        phiLength = MathUtils.clamp(phiLength, 0, Math.PI * 2);
+    /**
+     * Generate from an advanced config
+     */
+    generateFromConfig(config: AdvancedConfig) {
+        const pointsAsArrays = generateRawPoints(config);
+        // convert the arrays to vectors
+        const points = pointsAsArrays.map(point => new Vector2(point[0], point[1]));
+        const segmentMap = pointsAsArrays.map(point => point[2]);
+        this.activeConfig = config;
+        this.activeGenerationPoints = points;
+        this.activeSegmentMap = segmentMap;
+        this.generateFromPoints(points);
+    }
+
+    /**
+     * Re-generate the geometry with new points using existing parameters
+     */
+    generateFromPoints(points: Vector2[]) {
+        // update stored points
+        this.parameters.points = points;
+
+        const { segments, phiStart, phiLength } = this.parameters;
+        this.buildGeometry(points, segments, phiStart, phiLength);
+    }
+
+    /**
+     * Internal builder used by constructor and generate()
+     */
+    private buildGeometry(points: Vector2[], segmentsIn: number, phiStartIn: number, phiLengthIn: number) {
+        // normalize inputs
+        const segments = Math.floor(segmentsIn);
+        const phiLength = MathUtils.clamp(phiLengthIn, 0, Math.PI * 2);
+        const phiStart = phiStartIn;
+
+        console.log('segments', segments);
 
         // buffers
-
-        const indices = [];
-        const vertices = [];
-        const uvs = [];
-        const initNormals = [];
-        const normals = [];
+        const indices: number[] = [];
+        const vertices: number[] = [];
+        const uvs: number[] = [];
+        const initNormals: number[] = [];
+        const normals: number[] = [];
+        const sectionIds: number[] = [];
 
         // helper variables
-
         const inverseSegments = 1.0 / segments;
         const vertex = new Vector3();
         const uv = new Vector2();
@@ -86,126 +125,86 @@ export class CisternGeometry extends BufferGeometry {
         let dy = 0;
 
         // pre-compute normals for initial "meridian"
-
         for (let j = 0; j <= (points.length - 1); j++) {
-
             switch (j) {
-
-                case 0:				// special handling for 1st vertex on path
-
+                case 0:
                     dx = points[j + 1].x - points[j].x;
                     dy = points[j + 1].y - points[j].y;
-
                     normal.x = dy * 1.0;
                     normal.y = - dx;
                     normal.z = dy * 0.0;
-
                     prevNormal.copy(normal);
-
                     normal.normalize();
-
                     initNormals.push(normal.x, normal.y, normal.z);
-
                     break;
-
-                case (points.length - 1):	// special handling for last Vertex on path
-
+                case (points.length - 1):
                     initNormals.push(prevNormal.x, prevNormal.y, prevNormal.z);
-
                     break;
-
-                default:			// default handling for all vertices in between
-
+                default:
                     dx = points[j + 1].x - points[j].x;
                     dy = points[j + 1].y - points[j].y;
-
                     normal.x = dy * 1.0;
                     normal.y = - dx;
                     normal.z = dy * 0.0;
-
                     curNormal.copy(normal);
-
                     normal.x += prevNormal.x;
                     normal.y += prevNormal.y;
                     normal.z += prevNormal.z;
-
                     normal.normalize();
-
                     initNormals.push(normal.x, normal.y, normal.z);
-
                     prevNormal.copy(curNormal);
-
             }
-
         }
 
         // generate vertices, uvs and normals
-
         for (let i = 0; i <= segments; i++) {
-
             const phi = phiStart + i * inverseSegments * phiLength;
-
             const sin = Math.sin(phi);
             const cos = Math.cos(phi);
-
             for (let j = 0; j <= (points.length - 1); j++) {
-
                 // vertex
-
                 vertex.x = points[j].x * sin;
                 vertex.y = points[j].y;
                 vertex.z = points[j].x * cos;
-
                 vertices.push(vertex.x, vertex.y, vertex.z);
-
                 // uv
-
                 uv.x = i / segments;
                 uv.y = j / (points.length - 1);
-
                 uvs.push(uv.x, uv.y);
-
                 // normal
-
                 const x = initNormals[3 * j + 0] * sin;
                 const y = initNormals[3 * j + 1];
                 const z = initNormals[3 * j + 0] * cos;
-
                 normals.push(x, y, z);
 
+                // section id
+                const sectionIndex = this.activeSegmentMap[j];
+                if (sectionIndex !== undefined) {
+                    sectionIds.push(sectionIndex);
+                }
             }
-
         }
 
         // indices
-
         for (let i = 0; i < segments; i++) {
-
             for (let j = 0; j < (points.length - 1); j++) {
-
                 const base = j + i * points.length;
-
                 const a = base;
                 const b = base + points.length;
                 const c = base + points.length + 1;
                 const d = base + 1;
-
                 // faces
-
                 indices.push(a, b, d);
                 indices.push(c, d, b);
-
             }
-
         }
 
-        // build geometry
-
+        // build geometry (overwrite attributes)
         this.setIndex(indices);
         this.setAttribute('position', new Float32BufferAttribute(vertices, 3));
         this.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
         this.setAttribute('normal', new Float32BufferAttribute(normals, 3));
-
+        this.setAttribute('sectionId', new Float32BufferAttribute(sectionIds, 1));
     }
 
     copy(source: CisternGeometry) {

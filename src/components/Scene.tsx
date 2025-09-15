@@ -1,8 +1,12 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Sphere } from "@react-three/drei";
 import { useControls } from "leva";
 import type { Mesh } from "three";
+import { Cistern } from "./Cistern";
+import { useSnapshot } from "valtio";
+import { controlState } from "./control/controlState";
+import { AdvancedConfig } from "../pointGeneration";
 
 function AnimatedSphere() {
     const meshRef = useRef<Mesh>(null);
@@ -33,9 +37,18 @@ function AnimatedSphere() {
 }
 
 export default function Scene() {
+    const { activeConfig } = useSnapshot(controlState);
+    const actualConfig = activeConfig as AdvancedConfig;
+    const cisternRef = useRef<Mesh | null>(null);
+
     const showObjects = useControls("Scene Controls", {
         showSphere: true,
     });
 
-    return <>{showObjects.showSphere && <AnimatedSphere />}</>;
+    return (
+        <>
+            <Cistern meshRef={cisternRef} config={actualConfig} />
+            {showObjects.showSphere && <AnimatedSphere />}
+        </>
+    );
 }
