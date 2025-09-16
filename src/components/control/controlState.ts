@@ -1,7 +1,6 @@
 import { proxy } from "valtio";
 // import * as THREE from "three/webgpu";
 import {
-    generateConfigPoints,
     generateRawPoints,
     getConfigFromBase,
     mergeConfigs,
@@ -15,14 +14,11 @@ const baseConfig = {
     peak: 1,
     pedestalRadius: 5,
     pedestalHeight: 0.25,
+    skylightRadius: 5,
 };
 
 const overrides: Partial<AdvancedConfig> = {
-    root: {
-        wallAngle: 90,
-        ceilingAngle: 90,
-        floorAngle: 0,
-    },
+
     soffit: {
         height: 1,
     },
@@ -31,7 +27,7 @@ const overrides: Partial<AdvancedConfig> = {
 // generate a config from base
 const firstConfig = getConfigFromBase(baseConfig, true);
 // merge overrides and make the initial section points
-const advancedConfig = generateConfigPoints(mergeConfigs(firstConfig, overrides))
+const advancedConfig = mergeConfigs(firstConfig, overrides);
 
 // make the raw worldspace points
 const initialPoints = generateRawPoints(advancedConfig);

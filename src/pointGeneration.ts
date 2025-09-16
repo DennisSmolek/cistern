@@ -1,13 +1,5 @@
 import { CubicBezierCurve, Vector2 } from "three/webgpu";
 
-
-const defaultPointCounts = {
-    corner: 10,
-    wall: 2,
-    pedestal: 3,
-    soffit: 6,
-};
-
 export type BaseConfig = {
     radius: number;
     height: number;
@@ -47,7 +39,7 @@ export type PedestalConfig = {
     height?: number;
     outerHeight?: number;
     radius?: number;
-    dropAngle?: number; // optional because soffit doesn't have an angle
+    dropAngle?: number;
     points?: Points;
     inset?: number;
     insetHeight?: number;
@@ -72,10 +64,10 @@ export type AdvancedConfig = {
     soffit?: PedestalConfig;
     skylight?: {
         radius?: number;
+        topRadius?: number;
         depth?: number;
         points?: Points;
         topLip?: number;
-        topDiff?: number;
     };
 };
 
@@ -139,7 +131,7 @@ export function getConfigFromBase(baseConfig: BaseConfig, skipPoints = false): A
             bottomRadius: baseConfig.bottomRadius || baseConfig.radius,
             height: baseConfig.height,
             topHeight: baseConfig.topHeight || baseConfig.height,
-            bottomHeight: baseConfig.bottomHeight || baseConfig.height,
+            bottomHeight: baseConfig.bottomHeight || 0,
         },
         pedestal: {
             height: baseConfig.pedestalHeight,
@@ -169,7 +161,7 @@ export function getConfigFromBase(baseConfig: BaseConfig, skipPoints = false): A
         },
         soffit: {
             height: 0,
-            radius: 0,
+            radius: 0.185,
             dropAngle: 0,
             inset: 0.125, // Default inset value
             insetHeight: 0.125, // Default inset height
@@ -177,17 +169,14 @@ export function getConfigFromBase(baseConfig: BaseConfig, skipPoints = false): A
         },
         skylight: {
             radius: baseConfig.skylightRadius || 0, // Skylight is typically smaller than full radius
+            topRadius: baseConfig.skylightRadius || 0,
             depth: 0.25,
             points: [] as Points,
             topLip: 0.125,
-            topDiff: -0.125,
         },
     };
 
     // Generate points for each section
-    if (!skipPoints) {
-        generateConfigPoints(config);
-    }
 
     return config;
 }
@@ -241,6 +230,70 @@ function attachTransformed(
     return finalPosition;
 }
 
+//* -------- Vector helpers --------
+// function subtract(a: number[], b: number[]): number[] {
+//     return [a[0] - b[0], a[1] - b[1]];
+// }
+
+function length(v: number[]): number {
+    return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+}
+
+function toUnit(v: number[], fallback: number[]): number[] {
+    const len = length(v);
+    return len > 0 ? [v[0] / len, v[1] / len] : fallback;
+}
+
+// function offset(point: number[], unit: number[], distance: number): number[] {
+//     return [point[0] + distance * unit[0], point[1] + distance * unit[1]];
+// }
+
+// function unitFromTo(from: number[], to: number[], fallback: number[]): number[] {
+//     return toUnit(subtract(to, from), fallback);
+// }
+
+//* Build a cubic bezier curve given a corner point, two unit directions, and distances
+function makeCornerBezier(
+    cornerPoint: number[],
+    startDirectionUnit: number[],
+    endDirectionUnit: number[],
+    distances: { start: number; firstControl: number; lastControl: number; end: number }
+): CubicBezierCurve {
+    const p0 = new Vector2(
+        cornerPoint[0] + distances.start * startDirectionUnit[0],
+        cornerPoint[1] + distances.start * startDirectionUnit[1]
+    );
+    const p1 = new Vector2(
+        cornerPoint[0] + distances.firstControl * startDirectionUnit[0],
+        cornerPoint[1] + distances.firstControl * startDirectionUnit[1]
+    );
+    const p2 = new Vector2(
+        cornerPoint[0] + distances.lastControl * endDirectionUnit[0],
+        cornerPoint[1] + distances.lastControl * endDirectionUnit[1]
+    );
+    const p3 = new Vector2(
+        cornerPoint[0] + distances.end * endDirectionUnit[0],
+        cornerPoint[1] + distances.end * endDirectionUnit[1]
+    );
+
+    return new CubicBezierCurve(p0, p1, p2, p3);
+}
+
+//* Build a cubic bezier from raw points; computes direction units internally
+function makeCornerCurveFromPoints(
+    cornerPoint: number[],
+    startTowardPoint: number[],
+    endTowardPoint: number[],
+    distances: { start: number; firstControl: number; lastControl: number; end: number },
+    fallbacks?: { startUnit?: number[]; endUnit?: number[] }
+): CubicBezierCurve {
+    const startVec = [startTowardPoint[0] - cornerPoint[0], startTowardPoint[1] - cornerPoint[1]];
+    const endVec = [endTowardPoint[0] - cornerPoint[0], endTowardPoint[1] - cornerPoint[1]];
+    const startUnit = toUnit(startVec, fallbacks?.startUnit || [1, 0]);
+    const endUnit = toUnit(endVec, fallbacks?.endUnit || [0, 1]);
+    return makeCornerBezier(cornerPoint, startUnit, endUnit, distances);
+}
+
 /*
  * Generates points for each section of the advanced config
  * Each section starts at (0,0) locally
@@ -257,12 +310,14 @@ function makePedestal(config: PedestalConfig): Points {
     const outerHeight = config.outerHeight || height;
     const inset = config.inset || 0.125;
     const insetHeight = config.insetHeight || 0.125;
-    const angle = config.dropAngle || 0;
+    const angle = config.dropAngle || 90;
     const radius = config.radius || 1;
     const angleRad = (angle * Math.PI) / 180;
 
-    // initial point at origin (on top of floor surface)
     pushArray(0, 0);
+
+    // initial point at origin (on top of floor surface)
+    pushArray(0, height);
 
     // extend X by radius, and possible a different outer height
     pushArray(radius, outerHeight);
@@ -283,12 +338,12 @@ function makePedestal(config: PedestalConfig): Points {
     // finally extend out insetDistance towards the radius direction
     pushArray(
         last()[0] + inset,
-        last()[1] + inset
+        last()[1]
     );
     return points;
 }
 
-function makeSoffit(config: PedestalConfig): Points {
+function makeSoffit(config: PedestalConfig, ceilingAngle?: number): Points {
     // Soffits are ceiling insets that start "on the ceiling"
     // They create a floating ceiling effect by going inward, down, outward, down, then inward again
 
@@ -297,9 +352,9 @@ function makeSoffit(config: PedestalConfig): Points {
     const height = config.height || 0;
     const inset = config.inset || 0.125;
     const insetHeight = config.insetHeight || 0.125;
-    const radius = config.radius || 0;
-    const dropAngle = config.dropAngle || 0;
+    const dropAngle = config.dropAngle || 90;
     const dropAngleRad = (dropAngle * Math.PI) / 180;
+    const radius = config.radius || 0;
 
     // initial point at origin (on the ceiling)
     pushArray(0, 0);
@@ -324,8 +379,17 @@ function makeSoffit(config: PedestalConfig): Points {
     );
 
     // finally towards the center radius 
-    // i think we drop this to maintain ceiling angle
-    //    pushArray(last()[0] - Math.max(radius, inset), last()[1]);
+    // If ceilingAngle is provided, extend out at that angle, otherwise go flat (along x axis)
+    if (typeof ceilingAngle === "number") {
+        // Move outward by max(radius, inset) at the given ceiling angle
+        pushArray(
+            last()[0] + Math.max(radius, inset) * Math.cos(ceilingAngle),
+            last()[1] + Math.max(radius, inset) * Math.sin(ceilingAngle)
+        );
+    } else {
+        // Default: move flat along x axis
+        pushArray(last()[0] - Math.max(radius, inset), last()[1]);
+    }
     return points;
 }
 
@@ -394,12 +458,10 @@ export function generateRawPoints(config: AdvancedConfig): Points {
     let floorLength = config.root?.bottomRadius || 0;
     // if we have a pedestal, move up pedestal height
     if (config.pedestal?.height && config.pedestal.height > 0) {
-        // section 0: pedestal
-        pushWithId(0, config.pedestal.height, 0);
         // make pedestal points
         const pedestalPoints = makePedestal(config.pedestal);
         // attach the pedestal points
-        attachTransformed(points, last(), pedestalPoints, 0);
+        attachTransformed(points, [0, 0], pedestalPoints, 0);
 
         // subtract the pedestal radius from the floor length
         floorLength -= config.pedestal.radius || 0;
@@ -422,110 +484,41 @@ export function generateRawPoints(config: AdvancedConfig): Points {
     const bottom = config.bottomCorner;
     const top = config.topCorner;
     if (!bottom || !top) throw new Error('Bottom and top corners are required to generate points!');
-    const bottomPoints: Vector2[] = [];
-    const topPoints: Vector2[] = [];
+
 
     //* CORNER POSITION CALCULATIONS ==============================
 
     // Calculate bottom corner positions
-    // Direction from bottom corner towards floor origin
-    const floorDirection = [
-        floorOrigin[0] - absoluteBottomCornerPoint[0],
-        floorOrigin[1] - absoluteBottomCornerPoint[1]
-    ];
-    const floorDistance = Math.sqrt(floorDirection[0] ** 2 + floorDirection[1] ** 2);
-    const floorUnit = floorDistance > 0 ? [floorDirection[0] / floorDistance, floorDirection[1] / floorDistance] : [1, 0];
-
-    // Direction from bottom corner towards top corner
-    const bottomWallDirection = [
-        absoluteTopCornerPoint[0] - absoluteBottomCornerPoint[0],
-        absoluteTopCornerPoint[1] - absoluteBottomCornerPoint[1]
-    ];
-    const bottomWallDistance = Math.sqrt(bottomWallDirection[0] ** 2 + bottomWallDirection[1] ** 2);
-    const bottomWallUnit = bottomWallDistance > 0 ? [bottomWallDirection[0] / bottomWallDistance, bottomWallDirection[1] / bottomWallDistance] : [0, 1];
-
-    // Calculate all bottom corner positions
-    const bottomStartDistance = bottom.startDistance || 0;
-    const bottomEndDistance = bottom.endDistance || 0;
-    const bottomFirstControlDistance = bottom.firstControlDistance || 0;
-    const bottomLastControlDistance = bottom.lastControlDistance || 0;
-
-    // start point
-    bottomPoints.push(new Vector2(
-        absoluteBottomCornerPoint[0] + bottomStartDistance * floorUnit[0],
-        absoluteBottomCornerPoint[1] + bottomStartDistance * floorUnit[1]
-    ));
-
-    // first control point
-    bottomPoints.push(new Vector2(
-        absoluteBottomCornerPoint[0] + bottomFirstControlDistance * floorUnit[0],
-        absoluteBottomCornerPoint[1] + bottomFirstControlDistance * floorUnit[1]
-    ));
-
-    // last control point
-    bottomPoints.push(new Vector2(
-        absoluteBottomCornerPoint[0] + bottomLastControlDistance * bottomWallUnit[0],
-        absoluteBottomCornerPoint[1] + bottomLastControlDistance * bottomWallUnit[1]
-    ));
-
-    // end point
-    bottomPoints.push(new Vector2(
-        absoluteBottomCornerPoint[0] + bottomEndDistance * bottomWallUnit[0],
-        absoluteBottomCornerPoint[1] + bottomEndDistance * bottomWallUnit[1]
-    ));
+    // Build bottom bezier curve
+    const bottomCurve = makeCornerCurveFromPoints(
+        absoluteBottomCornerPoint,
+        [floorOrigin[0], floorOrigin[1]],
+        absoluteTopCornerPoint,
+        {
+            start: bottom.startDistance || 0,
+            firstControl: bottom.firstControlDistance || 0,
+            lastControl: bottom.lastControlDistance || 0,
+            end: bottom.endDistance || 0,
+        }
+    );
 
 
     // Calculate top corner positions
 
-    // Direction from top corner towards bottom corner
-    const topWallDirection = [
-        absoluteBottomCornerPoint[0] - absoluteTopCornerPoint[0],
-        absoluteBottomCornerPoint[1] - absoluteTopCornerPoint[1]
-    ];
-    const wallDistance = Math.sqrt(topWallDirection[0] ** 2 + topWallDirection[1] ** 2);
-    const wallUnit = wallDistance > 0 ? [topWallDirection[0] / wallDistance, topWallDirection[1] / wallDistance] : [0, -1];
+    // Build top bezier curve
+    const topCurve = makeCornerCurveFromPoints(
+        absoluteTopCornerPoint,
+        absoluteBottomCornerPoint,
+        finalPosition,
+        {
+            start: top.startDistance || 0,
+            firstControl: top.firstControlDistance || 0,
+            lastControl: top.lastControlDistance || 0,
+            end: top.endDistance || 0,
+        }
+    );
 
-    // Direction from top corner towards final position
-    const ceilingDirection = [
-        finalPosition[0] - absoluteTopCornerPoint[0],
-        finalPosition[1] - absoluteTopCornerPoint[1]
-    ];
-    const ceilingDistance = Math.sqrt(ceilingDirection[0] ** 2 + ceilingDirection[1] ** 2);
-    const ceilingUnit = ceilingDistance > 0 ? [ceilingDirection[0] / ceilingDistance, ceilingDirection[1] / ceilingDistance] : [0, 1];
-
-    // Calculate all top corner positions
-    const topStartDistance = top.startDistance || 0;
-    const topEndDistance = top.endDistance || 0;
-    const topFirstControlDistance = top.firstControlDistance || 0;
-    const topLastControlDistance = top.lastControlDistance || 0;
-
-    // start point
-    topPoints.push(new Vector2(
-        absoluteTopCornerPoint[0] + topStartDistance * wallUnit[0],
-        absoluteTopCornerPoint[1] + topStartDistance * wallUnit[1]
-    ));
-
-    // first control point
-    topPoints.push(new Vector2(
-        absoluteTopCornerPoint[0] + topFirstControlDistance * wallUnit[0],
-        absoluteTopCornerPoint[1] + topFirstControlDistance * wallUnit[1]
-    ));
-
-    // last control point
-    topPoints.push(new Vector2(
-        absoluteTopCornerPoint[0] + topLastControlDistance * ceilingUnit[0],
-        absoluteTopCornerPoint[1] + topLastControlDistance * ceilingUnit[1]
-    ));
-
-    // end point
-    topPoints.push(new Vector2(
-        absoluteTopCornerPoint[0] + topEndDistance * ceilingUnit[0],
-        absoluteTopCornerPoint[1] + topEndDistance * ceilingUnit[1]
-    ));
-
-    //* Bezier Curve Generation:
-    const bottomCurve = new CubicBezierCurve(bottomPoints[0], bottomPoints[1], bottomPoints[2], bottomPoints[3]);
-    const topCurve = new CubicBezierCurve(topPoints[0], topPoints[1], topPoints[2], topPoints[3]);
+    //* Bezier Curve Sampling:
 
     // now we get points from the curves
     const bottomCurvePoints = bottomCurve.getPoints(10);
@@ -534,7 +527,7 @@ export function generateRawPoints(config: AdvancedConfig): Points {
     // for the wall we take the last point of the bottom and first of the top 
     bottomCurvePoints.forEach((point) => {
         const isLast = point === bottomCurvePoints[bottomCurvePoints.length - 1];
-        pushWithId(point.x, point.y, isLast ? 2 : 3); // section 2: bottom corner
+        pushWithId(point.x, point.y, isLast ? 3 : 2); // section 2: bottom corner
     });
     topCurvePoints.forEach((point) => {
         const isFirst = point === topCurvePoints[0];
@@ -542,19 +535,6 @@ export function generateRawPoints(config: AdvancedConfig): Points {
     });
 
     // we are now at the top of the corner and need to head towards the peak
-
-    // now we are at the top of the corner and attach the wall points
-    if (config.wall?.points && config.wall.height) {
-        attachTransformed(points, last(), config.wall.points, 3); // section 3: wall
-    }
-    // now we are at the top of the wall and attach the top corner points
-    if (
-        config.topCorner?.radius &&
-        config.topCorner.radius > 0 &&
-        config.topCorner.points
-    ) {
-        attachTransformed(points, last(), config.topCorner.points, 4); // section 4: topCorner
-    }
     // this is edge of the ceiling
     const ceilingEdge = last();
 
@@ -576,13 +556,24 @@ export function generateRawPoints(config: AdvancedConfig): Points {
     // extend out from last point at the ceilingAngle through the ceilingLength
     pushWithId(last()[0] + ceilingLength * Math.cos(ceilingAngle), last()[1] + ceilingLength * Math.sin(ceilingAngle), 5); // section 5: ceiling
 
-    // add the soffit points
-    if (config.soffit?.points && config.soffit.points.length > 0) {
-        attachTransformed(points, last(), config.soffit.points, 6); // section 6: soffit
+    // add the soffit points (generate if not provided but soffit is configured)
+    if (config.soffit) {
+        const soffitPts = (config.soffit.points && config.soffit.points.length > 0)
+            ? config.soffit.points
+            : makeSoffit(config.soffit, ceilingAngle);
+        if (soffitPts && soffitPts.length > 0) attachTransformed(points, last(), soffitPts, 6); // section 6: soffit
     }
     // add the skylight points
-    if (config.skylight?.points && config.skylight.points.length > 0) {
-        attachTransformed(points, last(), config.skylight.points, 7); // section 7: skylight
+    if (config.skylight?.radius && config.skylight.radius > 0) {
+        // section 7: skylight
+        // we should be at the edge of the wall or the soffit and need to go up and make a lip
+        const skylightHeight = (config.skylight?.depth || 0) + (config.soffit?.height || 0);
+        console.log('skylightHeight', skylightHeight, config.soffit?.height);
+        pushWithId(config.skylight?.topRadius || last()[0], last()[1] + skylightHeight, 7);
+        // if we have a topLip move out x from last
+        if (config.skylight?.topLip && config.skylight.topLip > 0) {
+            pushWithId(last()[0] + config.skylight.topLip, last()[1], 7);
+        }
     }
     //because of the skylight we probably arent at the final position and thats ok
 
