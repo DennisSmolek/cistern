@@ -18,6 +18,8 @@ export const ControlScene = () => {
         setLocalPoints(vecs);
     }, [points, arrayToVecs]);
 
+    // make changes to the config
+
     return (
         <group>
             {localPoints.map((point, index) => (
