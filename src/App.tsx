@@ -3,7 +3,7 @@ import { CameraControls } from "@react-three/drei";
 import { useControls } from "leva";
 import Scene from "./components/Scene";
 import WebGPUCanvas from "./components/WebGPUCanvas";
-import { ControlScene } from "./components/control/ControlScene";
+import { DotVisualizer } from "./components/control/DotsVisualizer";
 
 function App() {
     const { backgroundColor } = useControls({
@@ -44,7 +44,7 @@ function App() {
                 {/* Grid */}
 
                 {/* Camera Controls */}
-                <ControlScene />
+                <DotVisualizer />
 
                 <Scene />
             </View>

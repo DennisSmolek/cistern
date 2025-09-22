@@ -14,7 +14,17 @@ export default [
             sourceType: "module",
         },
         rules: {
-            "no-unused-vars": "warn",
+            // Prefer TS-aware unused vars; disable base rule to avoid false positives in type positions
+            "no-unused-vars": "off",
+            "@typescript-eslint/no-unused-vars": [
+                "warn",
+                {
+                    args: "after-used",
+                    argsIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
+                    caughtErrorsIgnorePattern: "^_",
+                },
+            ],
             "prefer-const": "error",
         },
     },

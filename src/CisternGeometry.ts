@@ -3,7 +3,7 @@
 
 
 import { Float32BufferAttribute, BufferGeometry, Vector2, Vector3, MathUtils } from "three/webgpu";
-import { AdvancedConfig, generateRawPoints } from "./pointGeneration";
+import { AdvancedConfig, generateRawPoints, mergeConfigs } from "./pointGeneration/pointGeneration";
 
 /**
  * Creates meshes with axial symmetry like vases. The lathe rotates around the Y axis.
@@ -69,19 +69,27 @@ export class CisternGeometry extends BufferGeometry {
         this.generateFromPoints(points);
 
     }
+    /**
+     * Take in a partial config, merge it, and generate from that
+     */
+    updateConfig(config: Partial<AdvancedConfig>) {
+        const newConfig = mergeConfigs(this.activeConfig, config);
+        const points = this.generateFromConfig(newConfig);
+        return { config: newConfig, points: points };
+    }
 
     /**
      * Generate from an advanced config
      */
-    generateFromConfig(config: AdvancedConfig) {
+    generateFromConfig(config: AdvancedConfig): Vector2[] {
         const pointsAsArrays = generateRawPoints(config);
         // convert the arrays to vectors
         const points = pointsAsArrays.map(point => new Vector2(point[0], point[1]));
-        const segmentMap = pointsAsArrays.map(point => point[2]);
+        const segmentMap = pointsAsArrays.map(point => point[2] ?? -1);
         this.activeConfig = config;
-        this.activeGenerationPoints = points;
         this.activeSegmentMap = segmentMap;
         this.generateFromPoints(points);
+        return points;
     }
 
     /**
@@ -90,6 +98,7 @@ export class CisternGeometry extends BufferGeometry {
     generateFromPoints(points: Vector2[]) {
         // update stored points
         this.parameters.points = points;
+        this.activeGenerationPoints = points;
 
         const { segments, phiStart, phiLength } = this.parameters;
         this.buildGeometry(points, segments, phiStart, phiLength);
@@ -171,17 +180,15 @@ export class CisternGeometry extends BufferGeometry {
                 uv.x = i / segments;
                 uv.y = j / (points.length - 1);
                 uvs.push(uv.x, uv.y);
-                // normal
+                // normal (inverted for inward-facing geometry)
                 const x = initNormals[3 * j + 0] * sin;
                 const y = initNormals[3 * j + 1];
                 const z = initNormals[3 * j + 0] * cos;
-                normals.push(x, y, z);
+                normals.push(- x, - y, - z);
 
                 // section id
                 const sectionIndex = this.activeSegmentMap[j];
-                if (sectionIndex !== undefined) {
-                    sectionIds.push(sectionIndex);
-                }
+                sectionIds.push(sectionIndex);
             }
         }
 
@@ -193,9 +200,9 @@ export class CisternGeometry extends BufferGeometry {
                 const b = base + points.length;
                 const c = base + points.length + 1;
                 const d = base + 1;
-                // faces
-                indices.push(a, b, d);
-                indices.push(c, d, b);
+                // faces (reverse winding for inward-facing geometry)
+                indices.push(a, d, b);
+                indices.push(c, b, d);
             }
         }
 
