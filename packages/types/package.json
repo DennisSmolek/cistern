@@ -1,0 +1,13 @@
+{
+    "name": "@cistern/types",
+    "version": "0.0.0",
+    "private": false,
+    "type": "module",
+    "types": "index.d.ts",
+    "files": [
+        "**/*.d.ts"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}

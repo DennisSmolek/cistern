@@ -1,0 +1,33 @@
+{
+    "name": "@cistern/core",
+    "version": "0.0.0",
+    "private": false,
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean",
+        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch"
+    },
+    "peerDependencies": {
+        "three": "^0.180.0"
+    },
+    "devDependencies": {
+        "tsup": "^8.5.0",
+        "typescript": "^5.9.2"
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "name": "@cistern/camera",
+    "version": "0.0.0",
+    "private": false,
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean",
+        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch"
+    },
+    "peerDependencies": {
+        "@react-three/drei": "^10.7.6",
+        "@react-three/fiber": "^9.3.0",
+        "react": "^18.0.0 || ^19.0.0",
+        "three": "^0.180.0"
+    },
+    "devDependencies": {
+        "@cistern/types": "workspace:*",
+        "camera-controls": "^3.1.0",
+        "tsup": "^8.5.0",
+        "typescript": "^5.9.2"
+    }
+}
