@@ -26,7 +26,6 @@ function App() {
         }}
         gl={{ antialias: true }}
       >
-        <CisternCamera makeDefault />
         <View.Port />
       </WebGPUCanvas>
       <View
@@ -36,7 +35,7 @@ function App() {
           left: 0,
           width: '100%',
           height: '100%',
-          zIndex: 1,
+          zIndex: 100,
         }}
       >
         {/* Lighting */}

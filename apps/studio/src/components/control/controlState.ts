@@ -31,7 +31,7 @@ const overrides: Partial<AdvancedConfig> = {
 // generate a config from base
 const firstConfig = getConfigFromBase(baseConfig);
 // merge overrides and make the initial section points
-const advancedConfig = mergeConfigs(firstConfig, overrides);
+const advancedConfig = mergeConfigs(firstConfig, overrides) as AdvancedConfig;
 
 
 interface ControlState {

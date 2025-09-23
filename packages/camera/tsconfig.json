@@ -7,7 +7,10 @@
     "emitDeclarationOnly": false,
     "outDir": "dist",
     "rootDir": "src",
-    "types": ["@cistern/types"]
+    "types": ["@cistern/types"],
+    "paths": {
+      "@cistern/core": ["packages/core/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]
 }
