@@ -77,6 +77,15 @@ importers:
       '@astrojs/starlight':
         specifier: ^0.36.0
         version: 0.36.0(astro@5.13.10(rollup@4.52.0)(typescript@5.9.2)(yaml@2.8.1))
+      '@cistern/camera':
+        specifier: workspace:*
+        version: link:../../packages/camera
+      '@cistern/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@cistern/r3f':
+        specifier: workspace:*
+        version: link:../../packages/r3f
       '@react-three/drei':
         specifier: ^10.7.6
         version: 10.7.6(@react-three/fiber@9.3.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0))(@types/react@19.1.13)(@types/three@0.180.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)
@@ -89,6 +98,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.9
         version: 19.1.9(@types/react@19.1.13)
+      '@wuhhh/view-webgpu':
+        specifier: ^0.1.0
+        version: 0.1.0(@react-three/fiber@9.3.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)
       astro:
         specifier: ^5.6.1
         version: 5.13.10(rollup@4.52.0)(typescript@5.9.2)(yaml@2.8.1)
@@ -107,9 +119,16 @@ importers:
       sharp:
         specifier: ^0.34.2
         version: 0.34.4
+      three:
+        specifier: ^0.180.0
+        version: 0.180.0
       valtio:
         specifier: ^2.1.7
         version: 2.1.7(@types/react@19.1.13)(react@19.1.1)
+    devDependencies:
+      '@cistern/types':
+        specifier: workspace:*
+        version: link:../../packages/types
 
   apps/examples:
     dependencies:
