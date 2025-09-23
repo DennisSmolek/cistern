@@ -1,77 +1,6 @@
-import { makePedestal, makeSoffit, makeTrim } from "./sectionUtils";
-import { makeCornerCurveFromPoints } from "./curveUtils";
-import { deepMerge, createPointTracker } from "./utils";
-import type { BaseConfig, AdvancedConfig, TrimConfig, Points, SinglePoint } from "./types";
-
-const defaultTrimConfig: TrimConfig = {
-    size: 0.25,
-    depth: -0.125,
-    bevelOuter: true,
-    bevelTopInner: true,
-    bevelBottomInner: true,
-    bevelSize: 0.0125,
-    offset: 0,
-    startFrom: 'bottom',
-}
-
-export function getConfigFromBase(baseConfig: BaseConfig): AdvancedConfig {
-    const config = {
-        root: {
-            radius: baseConfig.radius,
-            topRadius: baseConfig.topRadius || baseConfig.radius,
-            bottomRadius: baseConfig.bottomRadius || baseConfig.radius,
-            height: baseConfig.height,
-            topHeight: baseConfig.topHeight || baseConfig.height,
-            bottomHeight: baseConfig.bottomHeight || 0,
-        },
-        pedestal: {
-            height: baseConfig.pedestalHeight,
-            outerHeight: baseConfig.pedestalHeight,
-            radius: baseConfig.pedestalRadius,
-            dropAngle: 0,
-            points: [] as Points,
-            inset: 0.125,
-            insetHeight: 0.125,
-        },
-        bottomCorner: {
-            startDistance: baseConfig.cornerDistance || 1,
-            endDistance: baseConfig.cornerDistance || 1,
-            firstControlDistance: 0,
-            lastControlDistance: 0,
-            points: [] as Points,
-        },
-        topCorner: {
-            startDistance: baseConfig.cornerDistance || 1,
-            endDistance: baseConfig.cornerDistance || 1,
-            firstControlDistance: 0,
-            lastControlDistance: 0,
-            points: [] as Points,
-        },
-        wall: {
-            points: [] as Points,
-            ceilingTrim: defaultTrimConfig,
-            floorTrim: defaultTrimConfig,
-            railTrim: defaultTrimConfig,
-        },
-        soffit: {
-            height: 0,
-            radius: 0.185,
-            dropAngle: 0,
-            inset: 0.125,
-            insetHeight: 0.125,
-            points: [] as Points,
-        },
-        skylight: {
-            radius: baseConfig.skylightRadius || 0,
-            topRadius: baseConfig.skylightRadius || 0,
-            depth: 0.25,
-            points: [] as Points,
-            topLip: 0.125,
-        },
-    };
-
-    return config;
-}
+import { makePedestal, makeSoffit, makeTrim } from "./utils/sectionUtils";
+import { makeCornerCurveFromPoints } from "./utils/curveUtils";
+import { createPointTracker } from "./utils";
 
 function attachTransformed(
     mainPoints: Points,
@@ -101,9 +30,7 @@ function attachTransformed(
     return finalPosition;
 }
 
-export function mergeConfigs(config1: Partial<AdvancedConfig>, config2: Partial<AdvancedConfig>): AdvancedConfig {
-    return deepMerge<AdvancedConfig>(config1 || {}, config2 || {});
-}
+
 
 export function generateRawPoints(config: AdvancedConfig): Points {
     const points: Points = [];

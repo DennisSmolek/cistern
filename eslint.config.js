@@ -1,31 +1,36 @@
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import tsdoc from 'eslint-plugin-tsdoc';
 
 export default [
-    {
-        ignores: ["dist", "node_modules"],
+  {
+    ignores: ['dist', 'node_modules'],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    files: ['**/*.{ts,tsx,js,jsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
     },
-    js.configs.recommended,
-    ...tseslint.configs.recommended,
-    {
-        files: ["**/*.{ts,tsx,js,jsx}"],
-        languageOptions: {
-            ecmaVersion: 2020,
-            sourceType: "module",
-        },
-        rules: {
-            // Prefer TS-aware unused vars; disable base rule to avoid false positives in type positions
-            "no-unused-vars": "off",
-            "@typescript-eslint/no-unused-vars": [
-                "warn",
-                {
-                    args: "after-used",
-                    argsIgnorePattern: "^_",
-                    varsIgnorePattern: "^_",
-                    caughtErrorsIgnorePattern: "^_",
-                },
-            ],
-            "prefer-const": "error",
-        },
+    plugins: {
+      tsdoc,
     },
+    rules: {
+      // Prefer TS-aware unused vars; disable base rule to avoid false positives in type positions
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      'prefer-const': 'error',
+      'tsdoc/syntax': 'warn',
+    },
+  },
 ];

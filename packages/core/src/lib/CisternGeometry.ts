@@ -1,6 +1,6 @@
 import { Float32BufferAttribute, BufferGeometry, Vector2, Vector3, MathUtils } from "three/webgpu";
-import type { AdvancedConfig } from "./pointGeneration/types";
-import { generateRawPoints, mergeConfigs } from "./pointGeneration/pointGeneration";
+import { generateRawPoints } from "./pointGeneration";
+import { mergeConfigs } from "./config";
 
 export class CisternGeometry extends BufferGeometry {
     declare parameters: {
@@ -18,7 +18,7 @@ export class CisternGeometry extends BufferGeometry {
     constructor(points = [new Vector2(0, - 0.5), new Vector2(0.5, 0), new Vector2(0, 0.5)], segments = 36, phiStart = 0, phiLength = Math.PI * 2) {
         super();
         this.type = 'CisternGeometry';
-        this.activeConfig = {};
+        this.activeConfig = {} as AdvancedConfig;
         this.activeGenerationPoints = [];
         this.activeSegmentMap = [];
         this.parameters = { points, segments, phiStart, phiLength };

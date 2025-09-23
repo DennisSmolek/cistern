@@ -1,14 +1,15 @@
+// Re-export global types so consumers can import from '@cistern/core'
+export type BaseConfig = globalThis.BaseConfig
+export type AdvancedConfig = globalThis.AdvancedConfig
+export type Points = globalThis.Points
+export type SinglePoint = globalThis.SinglePoint
+export type TrimConfig = globalThis.TrimConfig
+export type WallConfig = globalThis.WallConfig
+export type CornerConfig = globalThis.CornerConfig
+export type PedestalConfig = globalThis.PedestalConfig
+
 export { CisternGeometry } from './lib/CisternGeometry'
 export { CisternMesh } from './lib/CisternMesh'
-export * as pointGeneration from './lib/pointGeneration'
-export type {
-    BaseConfig,
-    AdvancedConfig,
-    Points,
-    SinglePoint,
-    TrimConfig,
-    WallConfig,
-    CornerConfig,
-    PedestalConfig,
-} from './lib/pointGeneration/types'
-export { generateRawPoints, getConfigFromBase, mergeConfigs } from './lib/pointGeneration/pointGeneration'
+
+export { generateRawPoints } from './lib/pointGeneration'
+export { getConfigFromBase, mergeConfigs } from './lib/config'

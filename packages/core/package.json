@@ -27,6 +27,7 @@
         "three": "^0.180.0"
     },
     "devDependencies": {
+        "@cistern/types": "workspace:*",
         "tsup": "^8.5.0",
         "typescript": "^5.9.2"
     }

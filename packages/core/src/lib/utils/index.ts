@@ -1,4 +1,3 @@
-import { Points, SinglePoint } from "./types";
 
 export function createPointTracker(pointsArray: Points) {
     return {
@@ -17,7 +16,7 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
     );
 }
 
-export function deepMerge<T extends Record<string, unknown>>(obj1: Partial<T>, obj2: Partial<T>): T {
+export function deepMerge<T extends object>(obj1: Partial<T>, obj2: Partial<T>): T {
     const result: Record<string, unknown> = { ...(obj1 as Record<string, unknown>) };
 
     if (!obj2) return result as T;

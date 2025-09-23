@@ -13,6 +13,19 @@ interface TrimConfig {
     startFrom?: 'top' | 'bottom'
 }
 
+interface BaseConfig {
+    radius: number
+    height: number
+    topHeight?: number
+    bottomHeight?: number
+    topRadius?: number
+    bottomRadius?: number
+    pedestalRadius?: number
+    pedestalHeight?: number
+    cornerDistance?: number
+    skylightRadius?: number
+}
+
 interface WallConfig {
     ceilingTrim?: TrimConfig
     floorTrim?: TrimConfig
