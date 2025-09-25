@@ -24,22 +24,8 @@ export default function Fiber() {
         }}
         gl={{ antialias: true }}
       >
-        <View.Port />
-      </WebGPUCanvas>
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 100,
-        }}
-      >
+        {/* <View.Port /> */}
         {/* Lighting */}
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[10, 10, 5]} intensity={1} />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
 
         {/* Grid */}
 
@@ -47,7 +33,7 @@ export default function Fiber() {
         <DotVisualizer />
 
         <Scene />
-      </View>
+      </WebGPUCanvas>
       <View
         index={2}
         style={{

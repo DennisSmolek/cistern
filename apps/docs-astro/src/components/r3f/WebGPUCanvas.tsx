@@ -28,6 +28,7 @@ type WebGPUCanvasProps = CanvasProps;
 
 const WebGPUCanvas: React.FC<WebGPUCanvasProps> = ({ children, ...rest }) => (
   <Canvas
+    shadows
     {...rest}
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gl={async (props: any) => {

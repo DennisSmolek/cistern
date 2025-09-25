@@ -3,14 +3,15 @@ import type {} from '@react-three/fiber';
 import { FrontSide, Mesh, MeshStandardMaterial, Vector2 } from 'three/webgpu';
 import type { AdvancedConfig } from '@cistern/core';
 import { CisternGeometry } from '@cistern/core';
+import { ThreeElements } from '@react-three/fiber';
 
-export interface CisternProps {
+export type CisternProps = Omit<ThreeElements['mesh'], 'ref'> & {
   ref?: React.RefObject<Mesh | null>;
   config?: AdvancedConfig | Readonly<AdvancedConfig>;
   onUpdate?: (params: { config: AdvancedConfig; points: Vector2[] }) => void;
   onConfigChange?: (config: AdvancedConfig) => void;
   onPointsChange?: (points: Vector2[]) => void;
-}
+};
 
 export const Cistern: React.FC<CisternProps> = ({
   ref,
@@ -40,7 +41,7 @@ export const Cistern: React.FC<CisternProps> = ({
   }, [config, geometry, ref, handleUpdate]);
 
   return (
-    <mesh geometry={geometry} ref={ref as any} {...props}>
+    <mesh geometry={geometry} ref={ref as React.RefObject<Mesh>} {...props}>
       <meshStandardMaterial color="pink" side={FrontSide} />
     </mesh>
   );

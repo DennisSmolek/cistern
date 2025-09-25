@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { CameraControls, Sphere } from '@react-three/drei';
-import type { Mesh, SpotLight } from 'three/webgpu';
+import { Backdrop, CameraControls, Sphere } from '@react-three/drei';
+import type { Mesh, SpotLight, Group } from 'three/webgpu';
 import { Object3D, Vector3, Vector2 } from 'three/webgpu';
 import { Cistern, CisternCamera } from '@cistern/r3f';
 import { ref, useSnapshot } from 'valtio';
@@ -9,6 +9,9 @@ import { controlState } from './control/controlState';
 import { CisternMesh } from '@cistern/core';
 import { ControlScene } from './control/ControlScene';
 import { CisternCameraControls } from '@cistern/camera';
+import { useControls } from 'leva';
+import { Suzi } from './Suzi';
+import { Lights } from './Lights';
 
 function AnimatedSphere() {
   const meshRef = useRef<Mesh>(null);
@@ -38,6 +41,7 @@ export default function Scene() {
   const cisternRef = useRef<CisternMesh | null>(null);
   const spotLightRef = useRef<SpotLight | null>(null);
   const controlsRef = useRef<CisternCameraControls | null>(null);
+  const wrappingRef = useRef<Group | null>(null);
 
   const spotlightTarget = useMemo(() => {
     const target = new Object3D();
@@ -52,6 +56,22 @@ export default function Scene() {
     controlState.displayPoints = ref(newVecs);
   }, [actualConfig, overrideConfig]);
 
+  // lock/unlock the camera
+  const { lockCamera } = useControls({
+    lockCamera: false,
+  });
+
+  // move the camera to where we want
+  useEffect(() => {
+    if (!controlsRef.current) return;
+    const controls = controlsRef.current as CisternCameraControls;
+    controlsRef.current.setLookAt(41, 50, 20, 21, 20, 0);
+  }, []);
+  useEffect(() => {
+    if (!controlsRef.current) return;
+    controlsRef.current.setCollision(lockCamera);
+  }, [lockCamera]);
+
   return (
     <>
       <CisternCamera
@@ -60,10 +80,36 @@ export default function Scene() {
         cisternPosition={new Vector3(0, 0, 0)}
         config={actualConfig}
       />
-      <Cistern ref={cisternRef} config={activeConfig as AdvancedConfig} />
+      <Lights />
+      <group ref={wrappingRef}>
+        <Cistern
+          castShadow
+          receiveShadow
+          ref={cisternRef}
+          config={activeConfig as AdvancedConfig}
+        />
+        <mesh position={[41, 5, 0]} visible={false}>
+          <boxGeometry args={[40, 10, 40]} />
+          <meshStandardMaterial color="blue" />
+        </mesh>
+        <Suzi position={[41, 5, 0]} scale={10} />
+      </group>
+      <Backdrop
+        receiveShadow
+        floor={5}
+        segments={100}
+        position={[0, -0.25, -150]}
+        scale={[1800, 100, 100]}
+      >
+        <meshStandardMaterial color="blue" />
+      </Backdrop>
+      <mesh position={[0, 0.5, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial color="orange" />
+      </mesh>
+
       <ControlScene />
       <AnimatedSphere />
-      <spotLight ref={spotLightRef} intensity={1} position={[15, 1, 2]} target={spotlightTarget} />
     </>
   );
 }

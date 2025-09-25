@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useImperativeHandle } from 'react';
 import type { Vector3 } from 'three/webgpu';
 import type { AdvancedConfig } from '@cistern/core';
 import { CameraControls, CameraControlsProps } from '@react-three/drei';
@@ -8,19 +8,22 @@ interface CisternCameraProps extends CameraControlsProps {
   cisternPosition?: Vector3;
   config?: AdvancedConfig;
   ref?: React.Ref<CisternCameraControls>;
+  collision?: boolean;
 }
 
 // we use the custom IMPL with our cistern controls
-export const CisternCamera = ({ cisternPosition, config, ref, ...props }: CisternCameraProps) => {
+export const CisternCamera = ({
+  cisternPosition,
+  config,
+  ref,
+  collision,
+  ...props
+}: CisternCameraProps) => {
   // internally we will always have a ref
   const internalRef = useRef<CisternCameraControls>(null);
 
-  // connect the external ref to the internal ref
-  useEffect(() => {
-    if (!ref) return;
-    if (typeof ref === 'function') ref(internalRef.current);
-    else ref.current = internalRef.current;
-  }, [ref]);
+  // use imperative handle to expose the internal ref to parent components
+  useImperativeHandle(ref, () => internalRef.current!, []);
 
   // update cistern position and config when they change
   useEffect(() => {
@@ -31,6 +34,11 @@ export const CisternCamera = ({ cisternPosition, config, ref, ...props }: Cister
   useEffect(() => {
     if (internalRef.current && config) internalRef.current.updateConfig(config);
   }, [config]);
+
+  // Collision
+  useEffect(() => {
+    if (internalRef.current && collision) internalRef.current.setCollision(collision);
+  }, [collision]);
 
   return <CameraControls {...props} impl={CisternCameraControls} ref={internalRef} />;
 };

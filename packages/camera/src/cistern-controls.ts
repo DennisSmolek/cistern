@@ -2,8 +2,8 @@
 // og example: https://github.com/yomotsu/camera-controls/blob/dev/examples/collision-custom.html
 
 import CameraControls from "camera-controls";
-import { Camera, PerspectiveCamera, Vector3, Matrix4, Raycaster, CylinderGeometry, MeshBasicMaterial, Mesh, Object3D, DoubleSide, Box3 } from "three/webgpu";
-import { CisternGeometry, CisternMesh } from "@cistern/core";
+import { Camera, PerspectiveCamera, Vector3, Matrix4, Raycaster, CylinderGeometry, MeshBasicMaterial, Mesh, DoubleSide, Box3 } from "three/webgpu";
+import { CisternMesh } from "@cistern/core";
 
 const _ORIGIN = new Vector3(0, 0, 0);
 const _v3A = new Vector3();
@@ -12,54 +12,118 @@ const _v3C = new Vector3();
 const _rotationMatrix = new Matrix4();
 const _raycaster = new Raycaster();
 
+/**
+ * Extended camera controls with collision detection specifically designed for cistern geometries.
+ * Provides boundary constraints and collision detection based on cistern configuration.
+ */
 export class CisternCameraControls extends CameraControls {
 
+    /**
+     * The active configuration for the cistern geometry.
+     * Contains dimensions and parameters for collision detection.
+     */
     activeConfig?: AdvancedConfig;
+    /**
+     * The world position of the cistern mesh.
+     * Used for positioning collision geometry and boundary calculations.
+     */
     cisternPosition?: Vector3;
+    /**
+     * Whether the controls are using an external collider mesh.
+     * When true, collision detection uses the provided CisternMesh instead of generating one.
+     */
     usesExternalCollider = false;
+    /**
+     * Whether collision detection is currently active.
+     * When false, camera movement is not constrained by collision detection.
+     */
+    colissionActive = true;
 
+    /**
+     * Gets the maximum height of the cistern from the active configuration.
+     * @returns The top height of the cistern root configuration, or 0 if not set.
+     */
     get maxHeight() {
         // get from the topHeight of the activeConfig
         return this.activeConfig?.root?.topHeight || 0;
     }
 
+    /**
+     * Gets the minimum height of the cistern from the active configuration.
+     * @returns The bottom height of the cistern root configuration, or 0 if not set.
+     */
     get minHeight() {
         // get from the bottomHeight of the activeConfig
         return this.activeConfig?.root?.bottomHeight || 0;
     }
 
+    /**
+     * Gets the maximum radius of the cistern from the active configuration.
+     * @returns The larger of the top or bottom radius, or 0 if neither is set.
+     */
     get maxRadius() {
         // max of the top or bottom radius of the activeConfig
         return Math.max(this.activeConfig?.root?.topRadius || 0, this.activeConfig?.root?.bottomRadius || 0);
     }
+    /**
+     * Gets the minimum radius of the cistern from the active configuration.
+     * @returns The smaller of the top or bottom radius, or 0 if neither is set.
+     */
     get minRadius() {
         // min of the top or bottom radius of the activeConfig
         return Math.min(this.activeConfig?.root?.topRadius || 0, this.activeConfig?.root?.bottomRadius || 0);
     }
 
+    /**
+     * Gets the primary collider mesh used for collision detection.
+     * @returns The first collider mesh cast as a CisternMesh, or undefined if none exists.
+     */
     get primaryCollider() {
         return this.colliderMeshes[0] as CisternMesh;
     }
 
+    /**
+     * Creates a new instance of CisternCameraControls.
+     * 
+     * @param camera - The camera to control (typically a PerspectiveCamera)
+     * @param domElement - The DOM element to attach event listeners to
+     */
     constructor(camera: Camera, domElement: HTMLElement) {
-
         super(camera as PerspectiveCamera, domElement);
         this.updateConfig();
-        console.log('cisterncontrols constructor');
-
     }
+    /**
+     * Updates the position of the cistern in world space.
+     * This position is used for collision detection and boundary calculations.
+     * 
+     * @param position - The new world position of the cistern
+     */
     updateCisternPosition(position: Vector3) {
         this.cisternPosition = position;
     }
 
+    /**
+     * Updates the active configuration for the cistern.
+     * If a collider mesh already exists, its geometry will be updated with the new config.
+     * The boundary will be recalculated after the update.
+     * 
+     * @param config - Optional new configuration to apply. If not provided, uses existing activeConfig
+     */
     updateConfig(config?: AdvancedConfig) {
         // this lets us link the ref and call without declaring the link back
         if (config) this.activeConfig = config;
         if (!this.activeConfig) this.activeConfig = {};
         // if we already have a collider mesh, update it
+        // debug:
+        console.log('colliders go missing in HMR', this.primaryCollider)
         if (this.colliderMeshes.length > 0) this.primaryCollider.geometry.updateConfig(this.activeConfig);
         this.updateBoundary();
     }
+    /**
+     * Generates a boundary from the primary collider to constrain camera target movement.
+     * Creates a Box3 boundary that is 90% of the collider's size to prevent the target
+     * from leaving the cistern bounds.
+     */
     // generate a boundry from the primary collider to stop the target leaving its bounds
     updateBoundary() {
         if (!this.primaryCollider) return;
@@ -76,6 +140,11 @@ export class CisternCameraControls extends CameraControls {
         this.setBoundary(scaledBox);
     }
 
+    /**
+     * Generates a simple cylindrical collider mesh for collision detection.
+     * Creates a basic cylinder geometry based on the cistern's minimum radius and height.
+     * The collider is positioned at the cistern position and added to the colliderMeshes array.
+     */
     generateCollider() {
         if (!this.activeConfig || !this.cisternPosition) return;
         // make a a generic cistern
@@ -95,6 +164,12 @@ export class CisternCameraControls extends CameraControls {
         this.updateBoundary();
     }
 
+    /**
+     * Sets an external CisternMesh as the collider for collision detection.
+     * This enables using a pre-existing cistern mesh instead of generating a simple cylinder.
+     * 
+     * @param mesh - The CisternMesh to use as the collision geometry
+     */
     setCisternMesh(mesh: CisternMesh) {
         this.usesExternalCollider = true;
         this.colliderMeshes = [mesh];
@@ -104,26 +179,40 @@ export class CisternCameraControls extends CameraControls {
         this.updateBoundary();
     }
 
+    /**
+     * Enables or disables collision detection.
+     * When collision is disabled, the camera can move freely without constraints.
+     * 
+     * @param active - Whether to enable collision detection. Defaults to false if not provided.
+     */
+    setCollision(active?: boolean) {
+        this.colissionActive = active || false;
+    }
+
+    /**
+     * Performs collision testing using raycasting from camera corners.
+     * Casts rays from the camera's near plane corners through the target to detect
+     * intersections with collider meshes. Returns the minimum distance to prevent
+     * camera from penetrating the cistern geometry.
+     * 
+     * @returns The minimum distance to maintain from the cistern surface, or Infinity if no collision
+     */
     _collisionTest() {
         /*
         The original uses the target origin casts a ray through the corner and if it hits anything
         it reduces it's spherical size to that distance.
-        Our base distance will be the minRadius first
-
         */
+        let distance = Infinity;
+        if (!this.cisternPosition || !this.activeConfig || !this.colissionActive) return distance;
+
         // if we dont have a collider mesh, generate one
         if (this.colliderMeshes.length === 0) this.generateCollider();
-
-        let distance = Infinity;
-        if (!this.cisternPosition || !this.activeConfig) return distance;
-
 
         const direction = _v3A.setFromSpherical(this._spherical).divideScalar(this._spherical.radius);
         _rotationMatrix.lookAt(_ORIGIN, direction, this._camera.up);
 
         // force to be minRadius first
         distance = this.minRadius;
-
 
         // Loop over the corners in the near plane
         for (let i = 0; i < 4; i++) {
@@ -132,147 +221,17 @@ export class CisternCameraControls extends CameraControls {
             nearPlaneCorner.applyMatrix4(_rotationMatrix);
 
             // is this the actual corner position? is the original relative
-
             const origin = _v3C.addVectors(this._target, nearPlaneCorner);
             _raycaster.set(origin, direction);
             _raycaster.far = 1000;
-            //console.log('raycaster', _raycaster);
 
             const intersects = _raycaster.intersectObjects(this.colliderMeshes);
-            //console.log('intersects', intersects);
 
             if (intersects.length !== 0) {
-                // console.log('intersects distance', intersects[0].distance);
-
                 distance = intersects[0].distance;
-
             }
-
-
-
         }
 
-        //console.log('Final Distance:', distance);
-
         return distance;
-
     }
-
 }
-
-const circleDistance = (point: Vector3, origin: Vector3, radius: number) => {
-    // Create 2D vectors ignoring Y (up) component
-    const point2D = new Vector3(point.x, 0, point.z);
-    const origin2D = new Vector3(origin.x, 0, origin.z);
-
-    // Calculate distance from point to circle center in 2D plane
-    const distanceFromCenter = point2D.distanceTo(origin2D);
-
-    // Return distance from point to circle edge
-    // Positive = inside circle, Negative = outside circle
-    return radius - distanceFromCenter;
-}
-
-/**
- * Finds where a line from origin through point intersects with a horizontal plane at targetHeight
- * @param origin - Starting point of the line
- * @param point - Point that defines the line direction
- * @param targetHeight - Height of the horizontal plane
- * @returns The intersection point, or null if the line never intersects the plane
- */
-const linePlaneIntersection = (origin: Vector3, point: Vector3, targetHeight: number): Vector3 | null => {
-    // Calculate direction vector from origin to point
-    const direction = point.clone().sub(origin);
-
-    // If direction.y is 0, the line is horizontal and will never intersect a horizontal plane
-    if (Math.abs(direction.y) < 0.0001) return null;
-
-
-    // Calculate the parameter t for when the line hits the target height
-    // origin.y + t * direction.y = targetHeight
-    // t = (targetHeight - origin.y) / direction.y
-    const t = (targetHeight - origin.y) / direction.y;
-
-    // If t is negative, the intersection is behind the origin
-    if (t < 0) return null;
-
-    // Calculate the intersection point
-    return origin.clone().add(direction.multiplyScalar(t));
-}
-
-// so we don't have to create a new vector every time
-const _distancePointVector = new Vector3();
-const _circleIntersectionVector = new Vector3();
-const _circleCenterVector = new Vector3();
-
-/**
- * Finds the distance from origin to where a line intersects with a horizontal plane
- * @param origin - Starting point of the line
- * @param point - Point that defines the line direction
- * @param targetHeight - Height of the horizontal plane
- * @returns The distance from origin to intersection, or null if no intersection
- */
-const linePlaneDistance = (origin: Vector3, point: Vector3, targetHeight: number): number | null => {
-    // Calculate direction vector from origin to point
-    const direction = _distancePointVector.copy(point).sub(origin);
-
-    // If direction.y is 0, the line is horizontal and will never intersect a horizontal plane
-    if (Math.abs(direction.y) < 0.0001) return null;
-
-
-    // Calculate the parameter t for when the line hits the target height
-    const t = (targetHeight - origin.y) / direction.y;
-
-    // If t is negative, the intersection is behind the origin
-    if (t < 0) return null;
-
-    // Return the distance from origin to intersection point
-    return direction.length() * t;
-}
-
-/**
- * Finds the distance from line origin to where a line intersects with a circle edge
- * @param lineOrigin - Starting point of the line (e.g., camera position)
- * @param point - Point that defines the line direction
- * @param circleCenter - Center of the circle
- * @param radius - Radius of the circle
- * @returns The distance from line origin to circle edge intersection, or null if no intersection
- */
-const lineCircleDistance = (lineOrigin: Vector3, point: Vector3, circleCenter: Vector3, radius: number): number | null => {
-    // Create 2D vectors ignoring Y component
-    const lineOrigin2D = _circleIntersectionVector.set(lineOrigin.x, 0, lineOrigin.z);
-    const point2D = _distancePointVector.set(point.x, 0, point.z);
-    const circleCenter2D = _circleCenterVector.set(circleCenter.x, 0, circleCenter.z);
-
-    // Calculate direction vector from line origin to point
-    const direction2D = point2D.clone().sub(lineOrigin2D);
-
-    // If the line has no direction, return null
-    if (direction2D.length() < 0.0001) return null;
-
-    // Calculate vector from line origin to circle center
-    const toCircleCenter = circleCenter2D.clone().sub(lineOrigin2D);
-
-    // Normalize direction for projection calculation
-    const directionNormalized = direction2D.clone().normalize();
-
-    // Project circle center onto the line direction
-    const projectionLength = toCircleCenter.dot(directionNormalized);
-
-    // Calculate perpendicular distance from circle center to the line
-    const perpendicularDistance = Math.sqrt(toCircleCenter.lengthSq() - projectionLength * projectionLength);
-
-    // If perpendicular distance > radius, line doesn't intersect circle
-    if (perpendicularDistance > radius) return null;
-
-    // Calculate distance along line to circle edge (closest intersection)
-    const halfChord = Math.sqrt(radius * radius - perpendicularDistance * perpendicularDistance);
-    const intersectionDistance = projectionLength - halfChord;
-
-    // If intersection is behind the line origin, return null
-    if (intersectionDistance < 0) return null;
-
-    // Return distance from line origin to circle edge
-    return intersectionDistance;
-}
-

@@ -20,14 +20,12 @@
         "access": "public"
     },
     "scripts": {
-        "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean",
-        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch"
+        "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean --tsconfig tsconfig.tsup.json",
+        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch --tsconfig tsconfig.tsup.json"
     },
     "peerDependencies": {
-        "@react-three/drei": "^10.7.6",
-        "@react-three/fiber": "^9.3.0",
-        "react": "^18.0.0 || ^19.0.0",
-        "three": "^0.180.0"
+        "three": "^0.180.0",
+        "camera-controls": "^3.1.0"
     },
     "dependencies": {
         "@cistern/core": "workspace:*"
