@@ -32,17 +32,14 @@ function attachTransformed(
 
 
 
-export function generateRawPoints(config: AdvancedConfig): Points {
+export function generateRawPoints(config: CisternConfig): Points {
     const points: Points = [];
     const { last, pushWithId } = createPointTracker(points);
 
     if (config.pedestal?.height && config.pedestal.height > 0) {
-        const pedestalPoints = makePedestal(config.pedestal);
-        attachTransformed(points, [0, 0], pedestalPoints, 0);
+        attachTransformed(points, [0, 0], makePedestal(config.pedestal), 0);
+    } else pushWithId(0, 0, 1);
 
-    } else {
-        pushWithId(0, 0, 1);
-    }
     const floorOrigin = last();
 
     //* Corner Generation ====--

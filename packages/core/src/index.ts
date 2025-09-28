@@ -1,6 +1,6 @@
 // Re-export global types so consumers can import from '@cistern/core'
 export type BaseConfig = globalThis.BaseConfig
-export type AdvancedConfig = globalThis.AdvancedConfig
+export type CisternConfig = globalThis.CisternConfig
 export type Points = globalThis.Points
 export type SinglePoint = globalThis.SinglePoint
 export type TrimConfig = globalThis.TrimConfig

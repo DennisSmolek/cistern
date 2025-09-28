@@ -2,7 +2,8 @@ import { Float32BufferAttribute, BufferGeometry, Vector2, Vector3, MathUtils } f
 import { generateRawPoints, } from "./pointGeneration";
 import { mergeConfigs, getConfigFromBase } from "./config";
 import { defaultBaseConfig } from "./defaults";
-import { AdvancedConfig } from "..";
+import { CisternConfig } from "..";
+import { circleToUV } from "./utils/threeUtils";
 
 export class CisternGeometry extends BufferGeometry {
     declare parameters: {
@@ -13,9 +14,10 @@ export class CisternGeometry extends BufferGeometry {
     };
 
     declare type: string;
-    activeConfig: AdvancedConfig;
+    activeConfig: CisternConfig;
     activeGenerationPoints: Vector2[];
     activeSegmentMap: number[];
+    segmentCounts: number[] = [];
 
     get maxRadius() {
         if (!this.activeConfig.root) return 0;
@@ -24,7 +26,7 @@ export class CisternGeometry extends BufferGeometry {
     }
 
 
-    constructor(points: Vector2[] = [], segments = 36, phiStart = 0, phiLength = Math.PI * 2, inputConfig?: AdvancedConfig) {
+    constructor(points: Vector2[] = [], segments = 36, phiStart = 0, phiLength = Math.PI * 2, inputConfig?: CisternConfig) {
         super();
         this.type = 'CisternGeometry';
         this.activeConfig = getConfigFromBase(defaultBaseConfig);
@@ -35,16 +37,21 @@ export class CisternGeometry extends BufferGeometry {
         else this.updateConfig(inputConfig || this.activeConfig);
     }
 
-    updateConfig(config: Partial<AdvancedConfig>) {
+    updateConfig(config: Partial<CisternConfig>) {
         const newConfig = mergeConfigs(this.activeConfig, config);
         const points = this.generateFromConfig(newConfig);
         return { config: newConfig, points: points };
     }
 
-    generateFromConfig(config: AdvancedConfig): Vector2[] {
+    generateFromConfig(config: CisternConfig): Vector2[] {
         const pointsAsArrays = generateRawPoints(config);
         const points = pointsAsArrays.map(point => new Vector2(point[0], point[1]));
         const segmentMap = pointsAsArrays.map(point => point[2] ?? -1);
+        // build segment counts
+        this.segmentCounts = segmentMap.reduce((counts, segmentId) => {
+            counts[segmentId] = (counts[segmentId] || 0) + 1;
+            return counts;
+        }, [] as number[]);
         this.activeConfig = config;
         this.activeSegmentMap = segmentMap;
         this.generateFromPoints(points);
@@ -67,7 +74,7 @@ export class CisternGeometry extends BufferGeometry {
         const vertices: number[] = [];
         const uvs: number[] = [];
         const circularUVs: number[] = [];
-        const wallUVs: number[] = [];
+        const sectionPercentages: number[] = [];
         const initNormals: number[] = [];
         const normals: number[] = [];
         const sectionIds: number[] = [];
@@ -113,6 +120,8 @@ export class CisternGeometry extends BufferGeometry {
                     prevNormal.copy(curNormal);
             }
         }
+        let currentSection = 0;
+        let currentSectionIndex = 0;
 
         //* Final Vertex & UV Generation ====--
         for (let i = 0; i <= segments; i++) {
@@ -120,19 +129,38 @@ export class CisternGeometry extends BufferGeometry {
             const sin = Math.sin(phi);
             const cos = Math.cos(phi);
             for (let j = 0; j <= (points.length - 1); j++) {
+                // Position
                 vertex.x = points[j].x * sin;
                 vertex.y = points[j].y;
                 vertex.z = points[j].x * cos;
                 vertices.push(vertex.x, vertex.y, vertex.z);
+
+                // Regular UVs
                 uv.x = i / segments;
                 uv.y = j / (points.length - 1);
                 uvs.push(uv.x, uv.y);
+
+                // Circular UVs
+                const circularUV = circleToUV(vertex.x, vertex.z, this.maxRadius);
+                circularUVs.push(circularUV.x, circularUV.y);
+
+                // Normals
                 const x = initNormals[3 * j + 0] * sin;
                 const y = initNormals[3 * j + 1];
                 const z = initNormals[3 * j + 0] * cos;
                 normals.push(- x, - y, - z);
+
+                // Section IDs
                 const sectionIndex = this.activeSegmentMap[j];
                 sectionIds.push(sectionIndex);
+                // Position within the section
+                // reset as we progress through the sections
+                if (sectionIndex !== currentSection) {
+                    currentSection = sectionIndex;
+                    currentSectionIndex = 0;
+                }
+                sectionPercentages.push(currentSectionIndex / this.segmentCounts[currentSection]);
+                currentSectionIndex++;
             }
         }
 
@@ -152,8 +180,10 @@ export class CisternGeometry extends BufferGeometry {
         this.setIndex(indices);
         this.setAttribute('position', new Float32BufferAttribute(vertices, 3));
         this.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+        this.setAttribute('circularUV', new Float32BufferAttribute(circularUVs, 2));
         this.setAttribute('normal', new Float32BufferAttribute(normals, 3));
         this.setAttribute('sectionId', new Float32BufferAttribute(sectionIds, 1));
+        this.setAttribute('sectionPercentage', new Float32BufferAttribute(sectionPercentages, 1));
     }
 
     copy(source: CisternGeometry) {

@@ -38,8 +38,8 @@ export default function Scene() {
   const wrappingRef = useRef<Group | null>(null);
 
   // on init we might have the base config but later its the update config
-  const finalConfig: AdvancedConfig = useMemo(() => {
-    return overrideConfig as AdvancedConfig;
+  const finalConfig: CisternConfig = useMemo(() => {
+    return overrideConfig as CisternConfig;
   }, [overrideConfig]);
 
   const handleConfigChange = (config: AdvancedConfig) => {

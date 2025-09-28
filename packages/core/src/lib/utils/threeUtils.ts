@@ -24,3 +24,4 @@ export function circleToUV(x: number, y: number, radius: number): Vector2 {
 
     return new Vector2(u, v);
 }
+

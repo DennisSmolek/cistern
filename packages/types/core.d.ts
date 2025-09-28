@@ -54,7 +54,7 @@ interface PedestalConfig {
     insetOffset?: number
 }
 
-interface AdvancedConfig {
+interface CisternConfig {
     root?: {
         radius?: number
         topRadius?: number

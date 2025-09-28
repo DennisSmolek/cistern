@@ -8,9 +8,9 @@ import type { CisternCameraControls } from '@cistern/camera';
 
 export type CisternProps = Omit<ThreeElements['mesh'], 'ref'> & {
   ref?: React.RefObject<Mesh | null>;
-  config?: AdvancedConfig | Readonly<AdvancedConfig>;
-  onUpdate?: (params: { config: AdvancedConfig; points: Vector2[] }) => void;
-  onConfigChange?: (config: AdvancedConfig) => void;
+  config?: CisternConfig | Readonly<CisternConfig>;
+  onUpdate?: (params: { config: CisternConfig; points: Vector2[] }) => void;
+  onConfigChange?: (config: CisternConfig) => void;
   onPointsChange?: (points: Vector2[]) => void;
   useCamera?: boolean;
   children?: React.ReactNode;

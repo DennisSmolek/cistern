@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useImperativeHandle } from 'react';
 import type { Vector3 } from 'three/webgpu';
-import type { AdvancedConfig } from '@cistern/core';
+import type { CisternConfig } from '@cistern/core';
 import { CameraControls, CameraControlsProps } from '@react-three/drei';
 import { CisternCameraControls } from '@cistern/camera';
 
 interface CisternCameraProps extends CameraControlsProps {
   cisternPosition?: Vector3;
-  config?: AdvancedConfig;
+  config?: CisternConfig;
   ref?: React.Ref<CisternCameraControls>;
   collision?: boolean;
 }

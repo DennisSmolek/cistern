@@ -1,7 +1,7 @@
 import { defaultTrimConfig } from './defaults';
 import { deepMerge } from './utils';
 
-export function getConfigFromBase(baseConfig: BaseConfig): AdvancedConfig {
+export function getConfigFromBase(baseConfig: BaseConfig): CisternConfig {
     const config = {
         root: {
             radius: baseConfig.radius,
@@ -60,6 +60,6 @@ export function getConfigFromBase(baseConfig: BaseConfig): AdvancedConfig {
     return config;
 }
 
-export function mergeConfigs(config1: Partial<AdvancedConfig>, config2: Partial<AdvancedConfig>): AdvancedConfig {
-    return deepMerge<AdvancedConfig>(config1 || {}, config2 || {});
+export function mergeConfigs(config1: Partial<CisternConfig>, config2: Partial<CisternConfig>): CisternConfig {
+    return deepMerge<CisternConfig>(config1 || {}, config2 || {});
 }

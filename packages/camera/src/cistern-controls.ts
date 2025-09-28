@@ -22,7 +22,7 @@ export class CisternCameraControls extends CameraControls {
      * The active configuration for the cistern geometry.
      * Contains dimensions and parameters for collision detection.
      */
-    activeConfig?: AdvancedConfig;
+    activeConfig?: CisternConfig;
     /**
      * The world position of the cistern mesh.
      * Used for positioning collision geometry and boundary calculations.
@@ -111,7 +111,7 @@ export class CisternCameraControls extends CameraControls {
      * 
      * @param config - Optional new configuration to apply. If not provided, uses existing activeConfig
      */
-    updateConfig(config?: AdvancedConfig) {
+    updateConfig(config?: CisternConfig) {
         // this lets us link the ref and call without declaring the link back
         if (config) this.activeConfig = config;
         if (!this.activeConfig) this.activeConfig = {};

@@ -6,7 +6,7 @@ import {
     mergeConfigs,
 } from "@cistern/core";
 
-import type { AdvancedConfig } from "@cistern/core";
+import type { CisternConfig } from "@cistern/core";
 
 // NOTE this is handled internally now but we need to init the controls with these values
 const baseConfig = {
@@ -17,7 +17,7 @@ const baseConfig = {
     skylightRadius: 5,
 };
 
-const overrides: Partial<AdvancedConfig> = {
+const overrides: Partial<CisternConfig> = {
 
     soffit: {
         height: 1,
@@ -32,27 +32,27 @@ const overrides: Partial<AdvancedConfig> = {
 // generate a config from base
 const firstConfig = getConfigFromBase(baseConfig);
 // merge overrides and make the initial section points
-const advancedConfig = mergeConfigs(firstConfig, overrides) as AdvancedConfig;
+const CisternConfig = mergeConfigs(firstConfig, overrides) as CisternConfig;
 
 
 interface ControlState {
     base: typeof baseConfig;
     displayPoints: Vector3[];
-    activeConfig: AdvancedConfig;
-    overrideConfig: Partial<AdvancedConfig>;
+    activeConfig: CisternConfig;
+    overrideConfig: Partial<CisternConfig>;
 }
 
 export const controlState = proxy<ControlState>({
     base: baseConfig,
     displayPoints: ref([]),
-    activeConfig: advancedConfig,
+    activeConfig: CisternConfig,
     overrideConfig: overrides,
 });
 
 
 
 
-export function generateCistern(overrideConfig: Partial<AdvancedConfig>) {
+export function generateCistern(overrideConfig: Partial<CisternConfig>) {
     const newConfig = mergeConfigs(controlState.activeConfig, overrideConfig);
     const newPoints = generateRawPoints(newConfig);
 
