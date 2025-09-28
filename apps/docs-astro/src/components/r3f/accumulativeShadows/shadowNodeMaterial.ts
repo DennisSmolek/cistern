@@ -37,6 +37,7 @@ export class ShadowNodeMaterial extends THREE.MeshPhongNodeMaterial {
 
     constructor() {
         super();
+        console.log('Made node material')
 
         // setup material
         const sampledDiffuseColor = this.shadowUniforms.map.sample(uv());

@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import type {} from '@react-three/fiber';
-import { FrontSide, Mesh, MeshStandardMaterial, Vector2 } from 'three/webgpu';
-import type { AdvancedConfig } from '@cistern/core';
-import { CisternGeometry } from '@cistern/core';
+import { Mesh, Vector2, Vector3 } from 'three/webgpu';
 import { ThreeElements } from '@react-three/fiber';
+import { CisternMesh } from './CisternMesh';
+import { CisternCamera } from './CisternCamera';
+import type { CisternCameraControls } from '@cistern/camera';
 
 export type CisternProps = Omit<ThreeElements['mesh'], 'ref'> & {
   ref?: React.RefObject<Mesh | null>;
@@ -11,6 +12,8 @@ export type CisternProps = Omit<ThreeElements['mesh'], 'ref'> & {
   onUpdate?: (params: { config: AdvancedConfig; points: Vector2[] }) => void;
   onConfigChange?: (config: AdvancedConfig) => void;
   onPointsChange?: (points: Vector2[]) => void;
+  useCamera?: boolean;
+  children?: React.ReactNode;
 };
 
 export const Cistern: React.FC<CisternProps> = ({
@@ -19,30 +22,49 @@ export const Cistern: React.FC<CisternProps> = ({
   onConfigChange,
   onPointsChange,
   onUpdate,
+  useCamera = true,
+  children,
   ...props
 }) => {
-  const geometry = useMemo(() => new CisternGeometry(), []);
+  const controlsRef = useRef<CisternCameraControls | null>(null);
 
-  const handleUpdate = useCallback(
-    ({ config, points }: { config: AdvancedConfig; points: Vector2[] }) => {
-      if (onConfigChange) onConfigChange(config);
-      if (onPointsChange) onPointsChange(points);
-      if (onUpdate) onUpdate({ config, points });
-    },
-    [onConfigChange, onPointsChange, onUpdate],
-  );
-
+  // move the camera to where we want
   useEffect(() => {
-    if (geometry) {
-      const { config: newConfig, points } = geometry.updateConfig(config as AdvancedConfig);
-      handleUpdate({ config: newConfig, points });
-      if (ref?.current) (ref.current.material as MeshStandardMaterial).needsUpdate = true;
-    }
-  }, [config, geometry, ref, handleUpdate]);
+    if (!controlsRef.current) return;
+    console.log('controlsRef.current', controlsRef.current);
+    // const controls = controlsRef.current as CisternCameraControls;
+    //controlsRef.current.setLookAt(41, 50, 20, 21, 20, 0);
+  }, []);
+
+  // because r3f does "VectorLike we need to get it after the update"
+  const cisternPosition = useMemo(() => {
+    if (!ref?.current) return new Vector3(0, 0, 0);
+    return ref.current.position;
+  }, [ref]);
+
+  // memoize the config
+  const memoizedConfig = useMemo(() => config, [config]);
 
   return (
-    <mesh geometry={geometry} ref={ref as React.RefObject<Mesh>} {...props}>
-      <meshStandardMaterial color="pink" side={FrontSide} />
-    </mesh>
+    <>
+      <CisternMesh
+        ref={ref}
+        {...props}
+        config={memoizedConfig}
+        onConfigChange={onConfigChange}
+        onPointsChange={onPointsChange}
+        onUpdate={onUpdate}
+      >
+        {children}
+      </CisternMesh>
+      {useCamera && (
+        <CisternCamera
+          makeDefault
+          ref={controlsRef}
+          cisternPosition={cisternPosition}
+          config={memoizedConfig}
+        />
+      )}
+    </>
   );
 };

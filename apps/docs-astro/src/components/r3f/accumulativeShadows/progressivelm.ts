@@ -54,6 +54,7 @@ export class SimpleWebGPUProgressiveLightMap {
         previousShadowMap: texture()
 
     }
+    materialsSetup = false;
 
     constructor(renderer: THREE.WebGPURenderer, scene: THREE.Scene, res: number = 1024) {
         this.renderer = renderer;
@@ -66,18 +67,22 @@ export class SimpleWebGPUProgressiveLightMap {
         this.renderTargets.second = new THREE.RenderTarget(this.res, this.res, textureParams);
 
         // initialize the texture
-        this.uniforms.previousShadowMap = texture(this.renderTargets.first.texture);
-        this.setupMaterials();
+        this.uniforms.previousShadowMap.value = this.renderTargets.first.texture;
+        console.log('New PLM created')
+        // this.setupMaterials();
     }
 
     private setupMaterials() {
+        if (this.materialsSetup) return;
+        this.materialsSetup = true;
+        console.log('Setting up materials')
         // basic discard material
         this.materials.discard.colorNode = vec4(0, 0, 0, 0);
         // uv material
-        const uvNode = uv(1).flipY();
+        const uvNode = uv().flipY();
         this.materials.uv.vertexNode = vec4(sub(uvNode, vec2(0.5)).mul(2), 1, 1);
         this.materials.uv.outputNode = vec4(
-            mix(this.uniforms.previousShadowMap.sample(uv(1)), output, float(1).div(this.uniforms.averagingWindow)),
+            mix(this.uniforms.previousShadowMap.sample(uv()), output, float(1).div(this.uniforms.averagingWindow)),
         );
     }
 

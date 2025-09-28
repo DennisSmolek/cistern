@@ -9,3 +9,11 @@ export const defaultTrimConfig: TrimConfig = {
     offset: 0,
     startFrom: 'bottom',
 }
+
+export const defaultBaseConfig: BaseConfig = {
+    radius: 20,
+    height: 10,
+    pedestalRadius: 5,
+    pedestalHeight: 0.25,
+    skylightRadius: 5,
+};

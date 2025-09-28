@@ -64,7 +64,7 @@ export function makeSoffit(config: PedestalConfig, ceilingAngle?: number): Point
     return points;
 }
 
-export function makeTrim(config: TrimConfig): Points {
+export function makeTrim(config: TrimConfig, offsetAngle?: number): Points {
     const points: Points = [];
 
     const trimBevelSize = config.bevelSize || 0.0125;
@@ -77,10 +77,21 @@ export function makeTrim(config: TrimConfig): Points {
     const bevelOuter = config.bevelOuter || false;
     const { last, pushArray } = createPointTracker(points);
     const trimDirection = depth > 0 ? 1 : -1;
-
-    pushArray(0, 0);
     const direction = startFrom === 'top' ? -1 : 1;
-    pushArray(0, direction * offset);
+
+    //* Start Generation ====--
+    pushArray(0, 0);
+
+    // because the edge can be at an angle, we need to adjust the offset based on the angle
+    if (offsetAngle) {
+        // Offset should move along the wall direction (perpendicular to wall normal)
+        // Wall normal is at offsetAngle, so wall direction is offsetAngle + 90 degrees
+        const wallDirection = offsetAngle + Math.PI / 2;
+        const offsetX = offset * Math.cos(wallDirection);
+        const offsetY = offset * Math.sin(wallDirection);
+        pushArray(offsetX, offsetY);
+    } else pushArray(0, direction * offset);
+
     const outerCorner = [depth, direction * offset] as SinglePoint;
     const opositeOuterCorner = [outerCorner[0], outerCorner[1] + direction * size] as SinglePoint;
     const firstBevel = startFrom === 'top' ? bevelTopInner : bevelBottomInner;

@@ -1,6 +1,8 @@
 import { Float32BufferAttribute, BufferGeometry, Vector2, Vector3, MathUtils } from "three/webgpu";
-import { generateRawPoints } from "./pointGeneration";
-import { mergeConfigs } from "./config";
+import { generateRawPoints, } from "./pointGeneration";
+import { mergeConfigs, getConfigFromBase } from "./config";
+import { defaultBaseConfig } from "./defaults";
+import { AdvancedConfig } from "..";
 
 export class CisternGeometry extends BufferGeometry {
     declare parameters: {
@@ -15,14 +17,22 @@ export class CisternGeometry extends BufferGeometry {
     activeGenerationPoints: Vector2[];
     activeSegmentMap: number[];
 
-    constructor(points = [new Vector2(0, - 0.5), new Vector2(0.5, 0), new Vector2(0, 0.5)], segments = 36, phiStart = 0, phiLength = Math.PI * 2) {
+    get maxRadius() {
+        if (!this.activeConfig.root) return 0;
+        // the top and bottom radius of the activeConfig
+        return Math.max(this.activeConfig.root.topRadius || 0, this.activeConfig.root.bottomRadius || 0);
+    }
+
+
+    constructor(points: Vector2[] = [], segments = 36, phiStart = 0, phiLength = Math.PI * 2, inputConfig?: AdvancedConfig) {
         super();
         this.type = 'CisternGeometry';
-        this.activeConfig = {} as AdvancedConfig;
+        this.activeConfig = getConfigFromBase(defaultBaseConfig);
         this.activeGenerationPoints = [];
         this.activeSegmentMap = [];
         this.parameters = { points, segments, phiStart, phiLength };
-        this.generateFromPoints(points as Vector2[]);
+        if (points && points.length > 0) this.generateFromPoints(points as Vector2[]);
+        else this.updateConfig(inputConfig || this.activeConfig);
     }
 
     updateConfig(config: Partial<AdvancedConfig>) {
@@ -56,6 +66,8 @@ export class CisternGeometry extends BufferGeometry {
         const indices: number[] = [];
         const vertices: number[] = [];
         const uvs: number[] = [];
+        const circularUVs: number[] = [];
+        const wallUVs: number[] = [];
         const initNormals: number[] = [];
         const normals: number[] = [];
         const sectionIds: number[] = [];
@@ -68,6 +80,8 @@ export class CisternGeometry extends BufferGeometry {
         const prevNormal = new Vector3();
         let dx = 0;
         let dy = 0;
+
+        //* InitialNormal Generation ====--
 
         for (let j = 0; j <= (points.length - 1); j++) {
             switch (j) {
@@ -100,6 +114,7 @@ export class CisternGeometry extends BufferGeometry {
             }
         }
 
+        //* Final Vertex & UV Generation ====--
         for (let i = 0; i <= segments; i++) {
             const phi = phiStart + i * inverseSegments * phiLength;
             const sin = Math.sin(phi);
@@ -121,6 +136,7 @@ export class CisternGeometry extends BufferGeometry {
             }
         }
 
+        //* Index Generation ====--
         for (let i = 0; i < segments; i++) {
             for (let j = 0; j < (points.length - 1); j++) {
                 const base = j + i * points.length;
@@ -157,3 +173,5 @@ export class CisternGeometry extends BufferGeometry {
         return new CisternGeometry(points, segments, phiStart, phiLength);
     }
 }
+
+

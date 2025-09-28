@@ -39,6 +39,8 @@ export class CisternCameraControls extends CameraControls {
      */
     colissionActive = true;
 
+    private colliderGenerated = false;
+
     /**
      * Gets the maximum height of the cistern from the active configuration.
      * @returns The top height of the cistern root configuration, or 0 if not set.
@@ -115,8 +117,9 @@ export class CisternCameraControls extends CameraControls {
         if (!this.activeConfig) this.activeConfig = {};
         // if we already have a collider mesh, update it
         // debug:
-        console.log('colliders go missing in HMR', this.primaryCollider)
-        if (this.colliderMeshes.length > 0) this.primaryCollider.geometry.updateConfig(this.activeConfig);
+        if (this.colliderMeshes.length > 0 && this.primaryCollider) this.primaryCollider.geometry.updateConfig(this.activeConfig);
+        else if (this.colliderGenerated) console.log('colliders go missing in HMR', this.primaryCollider)
+
         this.updateBoundary();
     }
     /**
@@ -147,6 +150,7 @@ export class CisternCameraControls extends CameraControls {
      */
     generateCollider() {
         if (!this.activeConfig || !this.cisternPosition) return;
+        this.colliderGenerated = true;
         // make a a generic cistern
         //const geometry = new CisternGeometry();
         // geometry.updateConfig(this.activeConfig);

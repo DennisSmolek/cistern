@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
-import { Backdrop, CameraControls, Sphere } from '@react-three/drei';
-import type { Mesh, SpotLight, Group } from 'three/webgpu';
-import { Object3D, Vector3, Vector2 } from 'three/webgpu';
-import { Cistern, CisternCamera } from '@cistern/r3f';
+import { useFrame } from '@react-three/fiber';
+import { Backdrop, Sphere } from '@react-three/drei';
+import type { Mesh, Group } from 'three/webgpu';
+import { Vector3, Vector2 } from 'three/webgpu';
+import { Cistern } from '@cistern/r3f';
 import { ref, useSnapshot } from 'valtio';
 import { controlState } from './control/controlState';
-import { CisternMesh } from '@cistern/core';
 import { ControlScene } from './control/ControlScene';
-import { CisternCameraControls } from '@cistern/camera';
-import { useControls } from 'leva';
 import { Suzi } from './Suzi';
 import { Lights } from './Lights';
 
@@ -36,63 +33,41 @@ function AnimatedSphere() {
 }
 
 export default function Scene() {
-  const { activeConfig, overrideConfig } = useSnapshot(controlState);
-  const actualConfig = activeConfig as AdvancedConfig;
-  const cisternRef = useRef<CisternMesh | null>(null);
-  const spotLightRef = useRef<SpotLight | null>(null);
-  const controlsRef = useRef<CisternCameraControls | null>(null);
+  const { overrideConfig } = useSnapshot(controlState);
+  const cisternRef = useRef<Mesh | null>(null);
   const wrappingRef = useRef<Group | null>(null);
 
-  const spotlightTarget = useMemo(() => {
-    const target = new Object3D();
-    target.position.set(25, 1, 2);
-    return target;
-  }, []);
+  // on init we might have the base config but later its the update config
+  const finalConfig: AdvancedConfig = useMemo(() => {
+    return overrideConfig as AdvancedConfig;
+  }, [overrideConfig]);
 
-  useEffect(() => {
+  const handleConfigChange = (config: AdvancedConfig) => {
     if (!cisternRef.current) return;
-    const { points } = cisternRef.current.geometry.updateConfig(overrideConfig || actualConfig);
+    controlState.activeConfig = config;
+  };
+
+  const handlePointsChange = (points: Vector2[]) => {
     const newVecs = points.map((point: Vector2) => new Vector3(point.x, point.y, 0));
     controlState.displayPoints = ref(newVecs);
-  }, [actualConfig, overrideConfig]);
-
-  // lock/unlock the camera
-  const { lockCamera } = useControls({
-    lockCamera: false,
-  });
-
-  // move the camera to where we want
-  useEffect(() => {
-    if (!controlsRef.current) return;
-    const controls = controlsRef.current as CisternCameraControls;
-    controlsRef.current.setLookAt(41, 50, 20, 21, 20, 0);
-  }, []);
-  useEffect(() => {
-    if (!controlsRef.current) return;
-    controlsRef.current.setCollision(lockCamera);
-  }, [lockCamera]);
+  };
 
   return (
     <>
-      <CisternCamera
-        makeDefault
-        ref={controlsRef}
-        cisternPosition={new Vector3(0, 0, 0)}
-        config={actualConfig}
-      />
       <Lights />
       <group ref={wrappingRef}>
         <Cistern
-          castShadow
           receiveShadow
           ref={cisternRef}
-          config={activeConfig as AdvancedConfig}
+          config={finalConfig}
+          onConfigChange={handleConfigChange}
+          onPointsChange={handlePointsChange}
         />
         <mesh position={[41, 5, 0]} visible={false}>
           <boxGeometry args={[40, 10, 40]} />
           <meshStandardMaterial color="blue" />
         </mesh>
-        <Suzi position={[41, 5, 0]} scale={10} />
+        <Suzi position={[0, 5, 0]} scale={2} />
       </group>
       <Backdrop
         receiveShadow
@@ -103,10 +78,6 @@ export default function Scene() {
       >
         <meshStandardMaterial color="blue" />
       </Backdrop>
-      <mesh position={[0, 0.5, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[100, 100]} />
-        <meshStandardMaterial color="orange" />
-      </mesh>
 
       <ControlScene />
       <AnimatedSphere />

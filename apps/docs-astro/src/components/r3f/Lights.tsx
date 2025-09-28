@@ -2,7 +2,19 @@ import { useRef, type RefObject } from 'react';
 import { DirectionalLight, Group, SpotLight, PointLight, Object3D } from 'three/webgpu';
 import { DirectionalLightHelper, SpotLightHelper, PointLightHelper } from 'three/webgpu';
 import { useControls } from 'leva';
-import { useHelper } from '@react-three/drei';
+import { Environment, useHelper } from '@react-three/drei';
+
+type EnvironmentPreset =
+  | 'city'
+  | 'sunset'
+  | 'warehouse'
+  | 'forest'
+  | 'apartment'
+  | 'park'
+  | 'studio'
+  | 'dawn'
+  | 'lobby'
+  | 'night';
 
 export const Lights = () => {
   const lightTarget1Ref = useRef<Group>(null);
@@ -45,8 +57,28 @@ export const Lights = () => {
     pointIntensity: 0.5,
   });
 
+  // env controls
+  const { envPreset } = useControls('Environment', {
+    envPreset: {
+      value: 'sunset',
+      options: [
+        'city',
+        'sunset',
+        'warehouse',
+        'forest',
+        'apartment',
+        'park',
+        'studio',
+        'dawn',
+        'lobby',
+        'night',
+      ],
+    },
+  });
+
   return (
     <>
+      <Environment preset={envPreset as EnvironmentPreset} />
       <ambientLight intensity={0.6} />
       <directionalLight
         ref={directionalLightRef}

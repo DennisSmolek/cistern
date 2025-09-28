@@ -8,6 +8,7 @@ import {
 
 import type { AdvancedConfig } from "@cistern/core";
 
+// NOTE this is handled internally now but we need to init the controls with these values
 const baseConfig = {
     radius: 20,
     height: 10,

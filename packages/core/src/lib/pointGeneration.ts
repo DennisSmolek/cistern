@@ -45,6 +45,9 @@ export function generateRawPoints(config: AdvancedConfig): Points {
     }
     const floorOrigin = last();
 
+    //* Corner Generation ====--
+    // We actually dont use it all yet to account for trim
+
     const absoluteBottomCornerPoint = [config.root?.bottomRadius || 0, config.root?.bottomHeight || last()[1]];
     const absoluteTopCornerPoint = [config.root?.topRadius || 0, config.root?.topHeight || 0];
     const finalPosition = [0, config.root?.height || 10];
@@ -85,12 +88,19 @@ export function generateRawPoints(config: AdvancedConfig): Points {
         pushWithId(point.x, point.y, isLast ? 3 : 2);
     });
 
+    //* Trim Points ====--
+    // we need to get the pitch between the bottom radius and top and pass it to trim
+    // because of the offsets
+    const angleDeltaX = absoluteTopCornerPoint[0] - absoluteBottomCornerPoint[0];
+    const angleDeltaY = absoluteTopCornerPoint[1] - absoluteBottomCornerPoint[1];
+    const wallAngle = Math.atan2(angleDeltaY, angleDeltaX);
+
     if (config.wall?.floorTrim?.size && config.wall.floorTrim.size > 0) {
         const floorTrimPoints = makeTrim(config.wall.floorTrim);
         attachTransformed(points, last(), floorTrimPoints, 2);
     }
     if (config.wall?.railTrim?.size && config.wall.railTrim.size > 0) {
-        const railTrimPoints = makeTrim(config.wall.railTrim);
+        const railTrimPoints = makeTrim(config.wall.railTrim, wallAngle);
         attachTransformed(points, last(), railTrimPoints, 2);
     }
     if (config.wall?.ceilingTrim?.size && config.wall.ceilingTrim.size > 0) {
