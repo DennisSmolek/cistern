@@ -1,9 +1,25 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
+import type { JSX } from 'react';
 import type {} from '@react-three/fiber';
-import { FrontSide, Mesh, MeshStandardMaterial, Vector2 } from 'three/webgpu';
+import {
+  FrontSide,
+  Mesh,
+  MeshStandardMaterial,
+  MeshStandardNodeMaterial,
+  Vector2,
+} from 'three/webgpu';
 import type { CisternConfig } from '@cistern/core';
 import { CisternGeometry } from '@cistern/core';
-import { ThreeElements } from '@react-three/fiber';
+import { extend, ThreeElements } from '@react-three/fiber';
+import { CisternMaterial } from '@cistern/core';
+
+extend({ CisternMaterial });
+
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    cisternMaterial: JSX.IntrinsicElements['meshStandardNodeMaterial'];
+  }
+}
 
 export type CisternMeshProps = Omit<ThreeElements['mesh'], 'ref'> & {
   ref?: React.RefObject<Mesh | null>;
@@ -36,12 +52,17 @@ export const CisternMesh: React.FC<CisternMeshProps> = ({
     if (!geometry) return;
     const { config: newConfig, points } = geometry.updateConfig(config as CisternConfig);
     handleUpdate({ config: newConfig, points });
-    if (ref?.current) (ref.current.material as MeshStandardMaterial).needsUpdate = true;
+    if (!ref?.current) return;
+    const material = ref.current.material as MeshStandardNodeMaterial;
+    if (!material) return;
+    material.needsUpdate = true;
+    // lets see if we can get output nodes
+    console.log('material', material);
   }, [config, geometry, ref, handleUpdate]);
 
   return (
     <mesh geometry={geometry} ref={ref} {...props}>
-      <meshStandardMaterial color="pink" side={FrontSide} />
+      <cisternMaterial color="pink" />
     </mesh>
   );
 };

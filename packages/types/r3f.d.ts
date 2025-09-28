@@ -8,6 +8,9 @@ declare module '@react-three/fiber' {
         shadowNodeMaterial: ThreeElements['meshPhongMaterial'] & {
             blend?: number
         }
+        meshStandardNodeMaterial: ThreeElements['meshStandardMaterial'] & {
+            blend?: number
+        }
     }
 }
 

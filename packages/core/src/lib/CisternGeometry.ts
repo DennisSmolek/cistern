@@ -88,7 +88,7 @@ export class CisternGeometry extends BufferGeometry {
         let dx = 0;
         let dy = 0;
 
-        //* InitialNormal Generation ====--
+        //* Initial Normal Generation ====--
 
         for (let j = 0; j <= (points.length - 1); j++) {
             switch (j) {

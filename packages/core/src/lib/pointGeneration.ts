@@ -94,15 +94,15 @@ export function generateRawPoints(config: CisternConfig): Points {
 
     if (config.wall?.floorTrim?.size && config.wall.floorTrim.size > 0) {
         const floorTrimPoints = makeTrim(config.wall.floorTrim);
-        attachTransformed(points, last(), floorTrimPoints, 2);
+        attachTransformed(points, last(), floorTrimPoints, 3);
     }
     if (config.wall?.railTrim?.size && config.wall.railTrim.size > 0) {
         const railTrimPoints = makeTrim(config.wall.railTrim, wallAngle);
-        attachTransformed(points, last(), railTrimPoints, 2);
+        attachTransformed(points, last(), railTrimPoints, 3);
     }
     if (config.wall?.ceilingTrim?.size && config.wall.ceilingTrim.size > 0) {
         const ceilingTrimPoints = makeTrim(config.wall.ceilingTrim);
-        attachTransformed(points, last(), ceilingTrimPoints, 2);
+        attachTransformed(points, last(), ceilingTrimPoints, 3);
     }
 
     topCurvePoints.forEach((point) => {

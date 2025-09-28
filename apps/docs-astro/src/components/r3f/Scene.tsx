@@ -42,7 +42,7 @@ export default function Scene() {
     return overrideConfig as CisternConfig;
   }, [overrideConfig]);
 
-  const handleConfigChange = (config: AdvancedConfig) => {
+  const handleConfigChange = (config: CisternConfig) => {
     if (!cisternRef.current) return;
     controlState.activeConfig = config;
   };
