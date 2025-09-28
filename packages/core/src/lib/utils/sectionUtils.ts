@@ -81,18 +81,18 @@ export function makeTrim(config: TrimConfig, offsetAngle?: number): Points {
 
     //* Start Generation ====--
     pushArray(0, 0);
+    let offsetStart = [0, direction * offset] as SinglePoint;
 
     // because the edge can be at an angle, we need to adjust the offset based on the angle
     if (offsetAngle) {
-        // Offset should move along the wall direction (perpendicular to wall normal)
-        // Wall normal is at offsetAngle, so wall direction is offsetAngle + 90 degrees
-        const wallDirection = offsetAngle + Math.PI / 2;
-        const offsetX = offset * Math.cos(wallDirection);
-        const offsetY = offset * Math.sin(wallDirection);
-        pushArray(offsetX, offsetY);
-    } else pushArray(0, direction * offset);
+        // Move offset distance along the wall angle from the last point
+        const offsetX = last()[0] + offset * Math.cos(offsetAngle);
+        const offsetY = last()[1] + offset * Math.sin(offsetAngle);
+        offsetStart = [offsetX, offsetY] as SinglePoint;
+    }
 
-    const outerCorner = [depth, direction * offset] as SinglePoint;
+    pushArray(offsetStart[0], offsetStart[1]);
+    const outerCorner = [offsetStart[0] + depth, offsetStart[1]] as SinglePoint;
     const opositeOuterCorner = [outerCorner[0], outerCorner[1] + direction * size] as SinglePoint;
     const firstBevel = startFrom === 'top' ? bevelTopInner : bevelBottomInner;
 
@@ -130,7 +130,7 @@ export function makeTrim(config: TrimConfig, offsetAngle?: number): Points {
     pushArray(last()[0] - depth, last()[1]);
     const lastBevel = startFrom === 'top' ? bevelBottomInner : bevelTopInner;
     if (lastBevel) {
-        const controlPoint = [0, last()[1]] as SinglePoint;
+        const controlPoint = [offsetStart[0], last()[1]] as SinglePoint;
         const endPoint = [controlPoint[0], controlPoint[1] + (direction * trimBevelSize)] as SinglePoint;
         const curve = makeBevelCurve(last(), endPoint, controlPoint);
         const curvePoints = curve.getPoints(10);

@@ -117,7 +117,9 @@ export class CisternCameraControls extends CameraControls {
         if (!this.activeConfig) this.activeConfig = {};
         // if we already have a collider mesh, update it
         // debug:
-        if (this.colliderMeshes.length > 0 && this.primaryCollider) this.primaryCollider.geometry.updateConfig(this.activeConfig);
+        // todo: we dont use a real cistern geo atm
+        // if (this.colliderMeshes.length > 0 && this.primaryCollider) this.primaryCollider.geometry.updateConfig(this.activeConfig);
+        if (this.colliderMeshes.length > 0 && this.primaryCollider) this.generateCollider();
         else if (this.colliderGenerated) console.log('colliders go missing in HMR', this.primaryCollider)
 
         this.updateBoundary();
@@ -148,9 +150,17 @@ export class CisternCameraControls extends CameraControls {
      * Creates a basic cylinder geometry based on the cistern's minimum radius and height.
      * The collider is positioned at the cistern position and added to the colliderMeshes array.
      */
+    // todo: cleanup and optimize
     generateCollider() {
         if (!this.activeConfig || !this.cisternPosition) return;
         this.colliderGenerated = true;
+        // if we already have a collider mesh, remove it
+        const existingCollider = this.colliderMeshes[0] as Mesh;
+        if (existingCollider) {
+            // clean it up before pop
+            existingCollider.geometry.dispose();
+            this.colliderMeshes.pop();
+        }
         // make a a generic cistern
         //const geometry = new CisternGeometry();
         // geometry.updateConfig(this.activeConfig);
