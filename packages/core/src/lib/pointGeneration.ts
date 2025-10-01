@@ -1,7 +1,25 @@
 import { makePedestal, makeSoffit, makeTrim } from "./utils/sectionUtils";
 import { makeCornerCurveFromPoints } from "./utils/curveUtils";
-import { createPointTracker } from "./utils";
+import { createPointTracker, notZero } from "./utils";
 
+/**
+ * Applies a local sequence of points relative to a current position and appends
+ * the transformed points into the main profile list.
+ *
+ * Notes:
+ * - The first entry in `pointsToTransform` is treated as the local origin and is
+ *   intentionally skipped. All subsequent points are translated by `currentPosition`.
+ * - When `sectionId` is provided, the transformed point is stored as a tuple with
+ *   the third value set to that section identifier.
+ * - Returns the last appended position to enable chaining successive attachments.
+ *
+ * @param mainPoints - Mutable list of profile points; appended in-place.
+ * @param currentPosition - The origin used to translate `pointsToTransform`.
+ * @param pointsToTransform - The local points (polyline) to attach.
+ * @param sectionId - Optional section classification to tag each appended point.
+ * @returns The final position appended to `mainPoints`.
+ * @internal
+ */
 function attachTransformed(
     mainPoints: Points,
     currentPosition: SinglePoint,
@@ -32,6 +50,34 @@ function attachTransformed(
 
 
 
+/**
+ * Generates the complete 2D profile polyline for a cistern, segmented into logical
+ * sections for downstream geometry and material assignment.
+ *
+ * The profile proceeds in this general order (when enabled by `config`):
+ * 1. Pedestal → Floor origin
+ * 2. Bottom corner curve
+ * 3. Wall trims (floor/rail/ceiling)
+ * 4. Top corner curve
+ * 5. Ceiling run
+ * 6. Soffit
+ * 7. Skylight
+ *
+ * Section identifiers used by the points:
+ * - 0: Pedestal
+ * - 1: Floor
+ * - 2: Bottom corner curve
+ * - 3: Lower wall / trims
+ * - 4: Top corner curve
+ * - 5: Ceiling run
+ * - 6: Soffit
+ * - 7: Skylight
+ *
+ * @param config - Parameterization for corners, trims, soffit, skylight, and dimensions.
+ * @returns Ordered list of points as tuples `[x, y, sectionId?]`.
+ * @throws Error if `bottomCorner` or `topCorner` is missing in `config`.
+ * @public
+ */
 export function generateRawPoints(config: CisternConfig): Points {
     const points: Points = [];
     const { last, pushWithId } = createPointTracker(points);
@@ -40,7 +86,9 @@ export function generateRawPoints(config: CisternConfig): Points {
         attachTransformed(points, [0, 0], makePedestal(config.pedestal), 0);
     } else pushWithId(0, 0, 1);
 
+    // for floor sections this actually needs to be tagged in 1
     const floorOrigin = last();
+    pushWithId(floorOrigin[0], floorOrigin[1], 1);
 
     //* Corner Generation ====--
     // We actually dont use it all yet to account for trim
@@ -79,10 +127,14 @@ export function generateRawPoints(config: CisternConfig): Points {
 
     const bottomCurvePoints = bottomCurve.getPoints(10);
     const topCurvePoints = topCurve.getPoints(10);
-
+    // lets try backtracking a small amount to clear this weird blur glitch
     bottomCurvePoints.forEach((point) => {
+        const isFirst = point === bottomCurvePoints[0];
         const isLast = point === bottomCurvePoints[bottomCurvePoints.length - 1];
-        pushWithId(point.x, point.y, isLast ? 3 : 2);
+        // double push first with previous section (weird blur glitch)
+        if (isFirst) pushWithId(point.x, point.y, 1);
+        pushWithId(point.x, point.y, 2);
+        if (isLast) pushWithId(point.x, point.y, 3);
     });
 
     //* Trim Points ====--
@@ -107,7 +159,10 @@ export function generateRawPoints(config: CisternConfig): Points {
 
     topCurvePoints.forEach((point) => {
         const isFirst = point === topCurvePoints[0];
-        pushWithId(point.x, point.y, isFirst ? 3 : 4);
+        const isLast = point === topCurvePoints[topCurvePoints.length - 1];
+        if (isFirst) pushWithId(point.x, point.y, 3);
+        pushWithId(point.x, point.y, 4);
+        if (isLast) pushWithId(point.x, point.y, 5);
     });
 
     const ceilingEdge = last();
@@ -118,22 +173,24 @@ export function generateRawPoints(config: CisternConfig): Points {
 
     const ceilingAngle = Math.atan2(deltaY, deltaX);
 
-    if (config.skylight?.radius && config.skylight.radius > 0) ceilingLength -= config.skylight.radius;
-    if (config.soffit?.radius && config.soffit.radius > 0) ceilingLength -= config.soffit.radius;
+    ceilingLength -= notZero(config.skylight?.radius) ?? 0;
+    ceilingLength -= notZero(config.soffit?.radius) ?? 0;
 
     pushWithId(last()[0] + ceilingLength * Math.cos(ceilingAngle), last()[1] + ceilingLength * Math.sin(ceilingAngle), 5);
 
     if (config.soffit) {
-        const soffitPts = (config.soffit.points && config.soffit.points.length > 0)
-            ? config.soffit.points
-            : makeSoffit(config.soffit, ceilingAngle);
+        // push another but at id 6 to try and fix transition bug
+        pushWithId(last()[0], last()[1], 6);
+        const soffitPts = notZero(config.soffit.points) ?? makeSoffit(config.soffit, ceilingAngle);
         if (soffitPts && soffitPts.length > 0) attachTransformed(points, last(), soffitPts, 6);
     }
-    if (config.skylight?.radius && config.skylight.radius > 0) {
+    if (notZero(config.skylight?.radius)) {
         const skylightHeight = (config.skylight?.depth || 0) + (config.soffit?.height || 0);
+        // push another to break transition bug
+        pushWithId(config.skylight?.topRadius || last()[0], last()[1] + skylightHeight, 6);
         pushWithId(config.skylight?.topRadius || last()[0], last()[1] + skylightHeight, 7);
-        if (config.skylight?.topLip && config.skylight.topLip > 0) {
-            pushWithId(last()[0] + config.skylight.topLip, last()[1], 7);
+        if (notZero(config.skylight?.topLip)) {
+            pushWithId(last()[0] + (config.skylight?.topLip ?? 0), last()[1], 7);
         }
     }
 

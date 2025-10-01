@@ -47,3 +47,15 @@ export function deepMerge<T extends object>(obj1: Partial<T>, obj2: Partial<T>):
 
     return result as T;
 }
+
+type NotZeroInput = number | Array<unknown> | null | undefined;
+export function notZero<T extends NotZeroInput>(inputItem?: T): T | undefined {
+    //* Return the original value when it is considered "non-zero/non-empty"; otherwise undefined
+    if (inputItem === undefined) return undefined;
+    if (inputItem === null) return undefined;
+    if (Array.isArray(inputItem)) return inputItem.length > 0 ? inputItem : undefined;
+    if (typeof inputItem === "number") return inputItem !== 0 && !Number.isNaN(inputItem) ? inputItem : undefined;
+    return undefined;
+}
+
+export { mat, withMat } from './threeUtils'

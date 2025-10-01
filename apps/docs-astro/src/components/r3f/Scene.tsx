@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Backdrop, Sphere } from '@react-three/drei';
 import type { Mesh, Group } from 'three/webgpu';
-import { Vector3, Vector2 } from 'three/webgpu';
+import { Vector3, Vector2, MathUtils } from 'three/webgpu';
 import { Cistern } from '@cistern/r3f';
 import { ref, useSnapshot } from 'valtio';
 import { controlState } from './control/controlState';
 import { ControlScene } from './control/ControlScene';
 import { Suzi } from './Suzi';
 import { Lights } from './Lights';
+import { useControls } from 'leva';
+import { ChangingCistern } from './ChangingCistern';
 
 function AnimatedSphere() {
   const meshRef = useRef<Mesh>(null);
@@ -26,7 +28,7 @@ function AnimatedSphere() {
   });
 
   return (
-    <Sphere ref={meshRef} position={position} args={[0.5, 32, 32]}>
+    <Sphere ref={meshRef} castShadow position={position} args={[0.5, 32, 32]}>
       <meshStandardMaterial color={color} />
     </Sphere>
   );
@@ -34,6 +36,7 @@ function AnimatedSphere() {
 
 export default function Scene() {
   const { overrideConfig } = useSnapshot(controlState);
+  const [pedestalHeight, setPedestalHeight] = useState(0);
   const cisternRef = useRef<Mesh | null>(null);
   const wrappingRef = useRef<Group | null>(null);
 
@@ -45,12 +48,27 @@ export default function Scene() {
   const handleConfigChange = (config: CisternConfig) => {
     if (!cisternRef.current) return;
     controlState.activeConfig = config;
+    const newHeight = config.pedestal?.height ?? 0;
+    if (newHeight !== pedestalHeight) {
+      setPedestalHeight(newHeight);
+    }
   };
 
   const handlePointsChange = (points: Vector2[]) => {
     const newVecs = points.map((point: Vector2) => new Vector3(point.x, point.y, 0));
     controlState.displayPoints = ref(newVecs);
   };
+
+  const { suziRotation } = useControls(
+    'Suzi',
+    {
+      suziRotation: {
+        label: 'Rotation',
+        value: [0, 0, 0],
+      },
+    },
+    { collapsed: true },
+  );
 
   return (
     <>
@@ -63,11 +81,13 @@ export default function Scene() {
           onConfigChange={handleConfigChange}
           onPointsChange={handlePointsChange}
         />
-        <mesh position={[41, 5, 0]} visible={false}>
-          <boxGeometry args={[40, 10, 40]} />
-          <meshStandardMaterial color="blue" />
-        </mesh>
-        <Suzi position={[0, 5, 0]} scale={2} />
+        <group position-x={pedestalHeight}>
+          <group rotation={suziRotation}>
+            <Suzi position={[2, 1, 0]} scale={1.5} />
+          </group>
+          <ChangingCistern position={[-2, 0.27, 0]} />
+          <AnimatedSphere />
+        </group>
       </group>
       <Backdrop
         receiveShadow
@@ -80,7 +100,6 @@ export default function Scene() {
       </Backdrop>
 
       <ControlScene />
-      <AnimatedSphere />
     </>
   );
 }

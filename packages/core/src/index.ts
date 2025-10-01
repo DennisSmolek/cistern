@@ -9,8 +9,9 @@ export type CornerConfig = globalThis.CornerConfig
 export type PedestalConfig = globalThis.PedestalConfig
 
 export { CisternGeometry } from './lib/CisternGeometry'
-export { CisternMesh } from './lib/CisternMesh'
+//export { CisternMesh } from './lib/CisternMesh'
 export { CisternMaterial } from './lib/CisternMaterial'
 
 export { generateRawPoints } from './lib/pointGeneration'
-export { getConfigFromBase, mergeConfigs } from './lib/config'
+export { getConfigFromBase, mergeConfigs, getConfig } from './lib/config'
+export { mat, withMat } from './lib/utils'

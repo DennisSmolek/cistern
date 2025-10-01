@@ -1,7 +1,33 @@
 import { defaultTrimConfig } from './defaults';
 import { deepMerge } from './utils';
 
-export function getConfigFromBase(baseConfig: BaseConfig): CisternConfig {
+export const defaultBaseConfig: BaseConfig = {
+    radius: 20,
+    height: 10,
+    pedestalRadius: 5,
+    pedestalHeight: 0.25,
+    skylightRadius: 5,
+};
+
+// depreciated
+export const getConfigFromBase = (baseConfig: BaseConfig): CisternConfig => {
+    return getConfig(baseConfig);
+}
+/**
+ * Generates a full CisternConfig object from a given BaseConfig.
+ *
+ * This function takes a minimal base configuration (dimensions, radii, heights, etc.)
+ * and expands it into a complete CisternConfig, filling in all required sub-sections
+ * (root, pedestal, corners, wall, soffit, skylight) with defaults and derived values.
+ *
+ * If no input is provided, the defaultBaseConfig is used.
+ *
+ * @param inputBaseConfig - The minimal base configuration to expand.
+ * @returns The fully expanded cistern configuration object.
+ */
+
+export function getConfig(inputBaseConfig?: BaseConfig): CisternConfig {
+    const baseConfig = inputBaseConfig || defaultBaseConfig;
     const config = {
         root: {
             radius: baseConfig.radius,
@@ -60,6 +86,16 @@ export function getConfigFromBase(baseConfig: BaseConfig): CisternConfig {
     return config;
 }
 
+/**
+ * Merges two CisternConfig objects.
+ *
+ * This function takes two CisternConfig objects and merges them, returning a new
+ * CisternConfig object with the merged values.
+ *
+ * @param config1 - The first CisternConfig object to merge.
+ * @param config2 - The second CisternConfig object to merge.
+ * @returns The merged CisternConfig object.
+ */
 export function mergeConfigs(config1: Partial<CisternConfig>, config2: Partial<CisternConfig>): CisternConfig {
     return deepMerge<CisternConfig>(config1 || {}, config2 || {});
 }

@@ -1,5 +1,5 @@
 import { proxy, ref } from "valtio";
-import { Vector3 } from "three/webgpu";
+import { MeshStandardNodeMaterial, MeshStandardMaterial, Vector3 } from "three/webgpu";
 import {
     generateRawPoints,
     getConfigFromBase,
@@ -37,6 +37,7 @@ const CisternConfig = mergeConfigs(firstConfig, overrides) as CisternConfig;
 
 interface ControlState {
     base: typeof baseConfig;
+    materials?: Record<string, MeshStandardNodeMaterial | MeshStandardMaterial>;
     displayPoints: Vector3[];
     activeConfig: CisternConfig;
     overrideConfig: Partial<CisternConfig>;
@@ -47,7 +48,10 @@ export const controlState = proxy<ControlState>({
     displayPoints: ref([]),
     activeConfig: CisternConfig,
     overrideConfig: overrides,
+    materials: ref({} as Record<string, MeshStandardNodeMaterial>)
 });
+
+
 
 
 

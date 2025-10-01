@@ -1,16 +1,30 @@
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
-import { Mesh } from 'three/webgpu';
-import { MaterialXLoader } from 'three/addons/loaders/MaterialXLoader.js';
+import { Mesh, MeshStandardMaterial } from 'three/webgpu';
 import type { ThreeElements } from '@react-three/fiber';
+import { controlState } from './control/controlState';
+import { ref } from 'valtio';
 
-export const Suzi = forwardRef<Mesh, ThreeElements['mesh']>((props, ref) => {
-  const { nodes } = useGLTF('./models/suzi.glb');
+export const Suzi = forwardRef<Mesh, ThreeElements['mesh']>((props, meshRef) => {
+  const { nodes, materials } = useGLTF('./models/suzimatholder.glb');
+
+  const { mesh } = useMemo(() => {
+    const mesh = nodes.Suzanne as Mesh;
+    return {
+      material: mesh.material as MeshStandardMaterial,
+      mesh: mesh,
+      geometry: mesh.geometry,
+    };
+  }, [nodes]);
+
+  useEffect(() => {
+    console.log('Materials', materials);
+    //controlState.materials = ref(materials as Record<string, MeshStandardMaterial>);
+  }, [materials]);
+
   return (
     <>
-      <mesh ref={ref} castShadow receiveShadow geometry={(nodes.mesh as Mesh).geometry} {...props}>
-        <meshStandardMaterial color="#9d4b4b" />
-      </mesh>
+      <primitive ref={meshRef} castShadow receiveShadow object={mesh} {...props} />
     </>
   );
 });

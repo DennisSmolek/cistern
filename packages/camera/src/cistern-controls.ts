@@ -3,7 +3,7 @@
 
 import CameraControls from "camera-controls";
 import { Camera, PerspectiveCamera, Vector3, Matrix4, Raycaster, CylinderGeometry, MeshBasicMaterial, Mesh, DoubleSide, Box3 } from "three/webgpu";
-import { CisternMesh } from "@cistern/core";
+//import { CisternMesh } from "@cistern/core";
 
 const _ORIGIN = new Vector3(0, 0, 0);
 const _v3A = new Vector3();
@@ -81,7 +81,7 @@ export class CisternCameraControls extends CameraControls {
      * @returns The first collider mesh cast as a CisternMesh, or undefined if none exists.
      */
     get primaryCollider() {
-        return this.colliderMeshes[0] as CisternMesh;
+        return this.colliderMeshes[0] as Mesh;
     }
 
     /**
@@ -184,10 +184,11 @@ export class CisternCameraControls extends CameraControls {
      * 
      * @param mesh - The CisternMesh to use as the collision geometry
      */
-    setCisternMesh(mesh: CisternMesh) {
+    setCisternMesh(mesh: Mesh) {
         this.usesExternalCollider = true;
         this.colliderMeshes = [mesh];
         mesh.updateMatrixWorld();
+        //@ts-expect-error we know we have the geo
         this.activeConfig = mesh.geometry.config;
         this.cisternPosition = mesh.position;
         this.updateBoundary();

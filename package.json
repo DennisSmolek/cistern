@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "pnpm -r build",
-    "dev": "pnpm -r --parallel --stream --filter @cistern/core --filter @cistern/camera --filter @cistern/r3f --filter apps/docs-astro dev",
+    "dev": "pnpm -r --parallel --stream --filter @cistern/core --filter @cistern/camera --filter @cistern/r3f --filter apps-docs-astro dev",
     "dev:studio": "pnpm --filter @cistern/studio dev",
     "dev:docs": "pnpm --filter @cistern/docs dev",
     "docs:api": "pnpm --filter @cistern/docs run build:api",

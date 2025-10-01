@@ -12,7 +12,7 @@ export default function Fiber() {
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <WebGPUCanvas
-        camera={{ position: [5, 5, 5], fov: 60 }}
+        camera={{ position: [4, 2, 9], fov: 60 }}
         style={{
           background: backgroundColor,
           position: 'absolute',
@@ -25,9 +25,6 @@ export default function Fiber() {
         gl={{ antialias: true }}
       >
         {/* <View.Port /> */}
-        {/* Lighting */}
-
-        {/* Grid */}
 
         {/* Camera Controls */}
         <DotVisualizer />
@@ -45,10 +42,7 @@ export default function Fiber() {
           background: 'lightblue',
           zIndex: 1,
         }}
-      >
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[5, 5, 5]} intensity={1.0} />
-      </View>
+      ></View>
     </div>
   );
 }

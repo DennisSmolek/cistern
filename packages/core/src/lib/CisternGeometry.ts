@@ -167,6 +167,11 @@ export class CisternGeometry extends BufferGeometry {
         //* Index Generation ====--
         for (let i = 0; i < segments; i++) {
             for (let j = 0; j < (points.length - 1); j++) {
+                // Skip generating faces between rows where the section changes.
+                // This prevents triangles from spanning multiple section IDs (avoids interpolation artifacts).
+                const s0 = this.activeSegmentMap[j];
+                const s1 = this.activeSegmentMap[j + 1];
+                if (s0 !== s1) continue;
                 const base = j + i * points.length;
                 const a = base;
                 const b = base + points.length;

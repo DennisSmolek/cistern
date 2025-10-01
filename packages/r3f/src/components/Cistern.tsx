@@ -9,7 +9,7 @@ import type { CisternCameraControls } from '@cistern/camera';
 export type CisternProps = Omit<ThreeElements['mesh'], 'ref'> & {
   ref?: React.RefObject<Mesh | null>;
   config?: CisternConfig | Readonly<CisternConfig>;
-  onUpdate?: (params: { config: CisternConfig; points: Vector2[] }) => void;
+  onCisternUpdate?: (params: { config: CisternConfig; points: Vector2[] }) => void;
   onConfigChange?: (config: CisternConfig) => void;
   onPointsChange?: (points: Vector2[]) => void;
   useCamera?: boolean;
@@ -21,12 +21,13 @@ export const Cistern: React.FC<CisternProps> = ({
   config,
   onConfigChange,
   onPointsChange,
-  onUpdate,
+  onCisternUpdate,
   useCamera = true,
   children,
   ...props
 }) => {
   const controlsRef = useRef<CisternCameraControls | null>(null);
+  const meshRef = useRef<Mesh | null>(null);
 
   // move the camera to where we want
   useEffect(() => {
@@ -38,9 +39,9 @@ export const Cistern: React.FC<CisternProps> = ({
 
   // because r3f does "VectorLike we need to get it after the update"
   const cisternPosition = useMemo(() => {
-    if (!ref?.current) return new Vector3(0, 0, 0);
-    return ref.current.position;
-  }, [ref]);
+    if (!meshRef.current) return new Vector3(0, 0, 0);
+    return meshRef.current.position;
+  }, []);
 
   // memoize the config
   const memoizedConfig = useMemo(() => config, [config]);
@@ -53,7 +54,7 @@ export const Cistern: React.FC<CisternProps> = ({
         config={memoizedConfig}
         onConfigChange={onConfigChange}
         onPointsChange={onPointsChange}
-        onUpdate={onUpdate}
+        onCisternUpdate={onCisternUpdate}
       >
         {children}
       </CisternMesh>

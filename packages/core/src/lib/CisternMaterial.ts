@@ -1,11 +1,12 @@
 // This is a node standard material wrapper with our own helpers
 
 import {
-    attribute, equal, Fn, texture, uniform, normalLocal, If, vec4, uv, select,
-    positionLocal, float, color,
-    ShaderNodeObject
+    attribute, Fn, texture, uniform, normalLocal, If, vec4, uv,
+    positionLocal, float,
+    ShaderNodeObject,
+    and
 } from "three/tsl";
-import { MeshStandardNodeMaterial, Node, Texture, FrontSide, UniformNode, Color } from "three/webgpu";
+import { MeshStandardNodeMaterial, Node, Texture, FrontSide, UniformNode, Vector4 } from "three/webgpu";
 
 
 /* Utility Functions to get our attributes from the geometry */
@@ -13,6 +14,7 @@ import { MeshStandardNodeMaterial, Node, Texture, FrontSide, UniformNode, Color 
 // Section: the index of the section
 
 export const Section = Fn(() => {
+    // Use f32 and keep triangles within a section so values stay constant per face
     return attribute('sectionId', 'f32');
 });
 
@@ -30,7 +32,9 @@ export const CircularUV = Fn(() => {
 
 export const IsSection = Fn(([sectionNumber]: [FnArg]) => {
     const section = Section();
-    return equal(section, float(sectionNumber));
+    const num = float(sectionNumber);
+    // Use a small band to account for any numerical noise; triangles are pruned across sections
+    return and(section.greaterThan(num.sub(0.2)), section.lessThan(num.add(0.2)));
 });
 
 
@@ -95,6 +99,13 @@ export class CisternMaterial extends MeshStandardNodeMaterial {
         ceiling: getBlankeNodeSet(),
     }
 
+    sectionalNodes: Record<SectionKey, Node> = {
+        pedestal: randomColorVec4(),
+        floor: randomColorVec4(),
+        wall: randomColorVec4(),
+        ceiling: randomColorVec4(),
+    }
+
 
     constructor() {
         super();
@@ -106,21 +117,44 @@ export class CisternMaterial extends MeshStandardNodeMaterial {
     }
 
     rebuild() {
+        // rebuild the sectional nodes
+        this.sectionalNodes = {
+            pedestal: this.getSectionNode('pedestal', 'map'),
+            floor: this.getSectionNode('floor', 'map'),
+            wall: this.getSectionNode('wall', 'map'),
+            ceiling: this.getSectionNode('ceiling', 'map'),
+        }
+        let rootColor = vec4(1, 0, 0, 1);
+        //@ts-expect-error tsl
+        if (this.map) rootColor = texture(this.map, uv());
         const baseColorNode = Fn(() => {
-            // this conditional runs in the builder not the shader
-            const outputColor = vec4(1, 0, 0, 1).toVar('outputColor');
-            if (this.map) outputColor.assign(texture(this.map, uv()));
-
-            // check if we are in the pedestal section
-            If(IsPedestal(), () => {
-                outputColor.assign(this.getSectionNode('pedestal', 'map', outputColor));
-            }).ElseIf(IsFloor(), () => {
-                outputColor.assign(this.getSectionNode('floor', 'map', outputColor));
-            }).ElseIf(IsWall(), () => {
-                outputColor.assign(this.getSectionNode('wall', 'map', outputColor));
-            }).ElseIf(IsCeiling(), () => {
-                outputColor.assign(this.getSectionNode('ceiling', 'map', outputColor));
+            const outputColor = rootColor.toVar('outputColor');
+            /*
+            const sectionNumber = attribute('sectionId', 'f32');
+            If(sectionNumber.equal(0), () => {
+                outputColor.assign(vec4(1, 1, 0, 1));
+            }).ElseIf(and(sectionNumber.greaterThan(0.8), sectionNumber.lessThan(1.2)), () => {
+                outputColor.assign(vec4(0, 1, 0, 1));
+            }).ElseIf(and(sectionNumber.greaterThan(1.8), sectionNumber.lessThan(2.2)), () => {
+                outputColor.assign(vec4(0, 0, 1, 1));
+            }).ElseIf(and(sectionNumber.greaterThan(2.8), sectionNumber.lessThan(3.2)), () => {
+                outputColor.assign(vec4(1, 0, 1, 1));
+            }).ElseIf(and(sectionNumber.greaterThan(3.8), sectionNumber.lessThan(4.2)), () => {
+                outputColor.assign(vec4(1, 1, 1, 1));
             })
+                */
+            // check if we are in the pedestal section
+
+            If(IsPedestal(), () => {
+                outputColor.assign(this.sectionalNodes.pedestal);
+            }).ElseIf(IsFloor(), () => {
+                outputColor.assign(this.sectionalNodes.floor);
+            }).ElseIf(IsWall(), () => {
+                outputColor.assign(this.sectionalNodes.wall);
+            }).ElseIf(IsCeiling(), () => {
+                outputColor.assign(this.sectionalNodes.ceiling);
+            })
+
 
             return outputColor;
         });
@@ -132,13 +166,12 @@ export class CisternMaterial extends MeshStandardNodeMaterial {
         // loop over the uniforms and set useColor to true, then mark this for update
         Object.values(this.uniforms).forEach((uniform) => {
             uniform.useColor.value = true;
-            console.log('uniform', uniform);
         });
         this.needsUpdate = true;
     }
 
     // todo: This is insanely verbose but shows what is happening
-    private getSectionNode(section: SectionKey, variant: SectionVariant, fallbackColor?: Node) {
+    private getSectionNode(section: SectionKey, variant: SectionVariant): Node {
         // map uniforms/textures for the requested section
         const sectionConfig: SectionConfig = {
             colorTexture: this.textures[section],
@@ -148,51 +181,34 @@ export class CisternMaterial extends MeshStandardNodeMaterial {
         }
 
         if (variant === 'vertex') {
-            return select(sectionConfig.useVertexNode, positionLocal, sectionConfig.nodes.vertex);
+            let overrideVertex: Node = positionLocal;
+            if (sectionConfig.useVertexNode.value) overrideVertex = sectionConfig.nodes.vertex;
+            return overrideVertex;
         }
 
         if (variant === 'map') {
-            // TODO Learn if we can use structs here
-            const sectionColor = sectionConfig.color;
-            const sectionColorNode = sectionConfig.nodes.color;
-            const sectionColorTexture = sectionConfig.colorTexture;
-            console.log('sectionColor', sectionColor);
-            const colorFn = Fn(([sectionColor, sectionColorNode, sectionColorTexture, fallbackColor]: [Node, Node, Node, Node]) => {
-                // by default we assign the fallback color
-                const colorOutput = vec4(0.3, 0.7, 0.2, 1).toVar('colorOutput');
-                colorOutput.assign(fallbackColor);
 
-                If(sectionConfig.useColor, () => {
-                    colorOutput.assign(sectionColor);
-                });
-                If(sectionConfig.useColorNode, () => {
-                    colorOutput.assign(sectionColorNode);
-                    //colorOutput.assign(vec4(1, 0.5, 0, 1)); // orange (RGB: 1, 0.5, 0)
-                }).ElseIf(sectionConfig.hasMap, () => {
-                    const outputUv = sectionConfig.useSquaredUV ? select(sectionConfig.useSquaredUV, CircularUV(), uv()) : uv();
-                    const sampled = texture(sectionConfig.colorTexture, outputUv);
-                    colorOutput.assign(sampled);
-                });
-
-                return colorOutput;
-            });
-            return colorFn(fallbackColor);
+            let overrideColor: Node = randomColorVec4();
+            if (this.map) overrideColor = texture(this.map, uv());
+            if (sectionConfig.useColorNode.value) overrideColor = sectionConfig.nodes.color;
+            if (sectionConfig.useColor.value) overrideColor = sectionConfig.color;
+            if (sectionConfig.hasMap.value) {
+                const outputUv = sectionConfig.useSquaredUV.value ? CircularUV() : uv();
+                overrideColor = texture(sectionConfig.colorTexture, outputUv);
+            }
+            return overrideColor;
         }
 
-        // variant === 'normal'
-        const normalFn = Fn(() => {
-            const normalOutput = normalLocal.toVar('normalOutput');
-            If(sectionConfig.useNormalNode, () => {
-                normalOutput.assign(sectionConfig.nodes.normal);
-            }).ElseIf(sectionConfig.hasNormalMap, () => {
-                const outputUv = sectionConfig.useSquaredUV ? select(sectionConfig.useSquaredUV, CircularUV(), uv()) : uv();
-                const sampled = texture(sectionConfig.normalTexture, outputUv);
-                // sample normal map; consumer may convert/tune as needed
-                normalOutput.assign(sampled.xyz);
-            });
-            return normalOutput;
-        });
-        return normalFn();
+        if (variant === 'normal') {
+            let overrideNormal: Node = normalLocal;
+            if (sectionConfig.useNormalNode.value) overrideNormal = sectionConfig.nodes.normal;
+            if (sectionConfig.hasNormalMap.value) {
+                const outputUv = sectionConfig.useSquaredUV.value ? CircularUV() : uv();
+                overrideNormal = texture(sectionConfig.normalTexture, outputUv);
+            }
+            return overrideNormal;
+        }
+        return vec4(1, 1, 0, 1);
     }
 
 }
@@ -207,7 +223,9 @@ type SectionKey = 'pedestal' | 'floor' | 'wall' | 'ceiling';
 type SectionVariant = 'map' | 'normal' | 'vertex';
 
 type BoolUniform = ShaderNodeObject<UniformNode<boolean>>;
-type ColorUniform = ShaderNodeObject<UniformNode<Node>>;
+// type ColorUniform = ShaderNodeObject<UniformNode<Node>>;
+
+type ColorUniform = ShaderNodeObject<UniformNode<Vector4>>;
 
 type SectionUniforms = {
     useColor: BoolUniform;
@@ -234,7 +252,7 @@ function getBlankUniforms(name?: string): SectionUniforms {
         useNormalNode: uniform(false),
         useVertexNode: uniform(false),
         hasNormalMap: uniform(false),
-        color: uniform(color(randomColorVec4()))
+        color: uniform(randomColorVec4())
     }
     // if we have a name, set the name
     if (name) {
