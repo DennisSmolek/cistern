@@ -40,7 +40,7 @@ jobs:
                   cache: "pnpm"
 
             - name: Install dependencies (monorepo)
-              run: pnpm install --no-frozen-lockfile
+              run: pnpm install --frozen-lockfile
 
             - name: Build workspace packages
               run: pnpm -w -r run build
