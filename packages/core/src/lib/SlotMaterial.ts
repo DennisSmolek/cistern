@@ -30,6 +30,7 @@ const makeSingleSlot = (material: MeshStandardNodeMaterial): SingleSlot => {
     const textureSet = {} as TextureSet;
     const settingsSet = {} as SettingsSet;
     const nodeSet = {} as NodeSet;
+    console.log(material);
 
     const finalSlot = {
         textureSet,
@@ -50,7 +51,14 @@ const makeSingleSlot = (material: MeshStandardNodeMaterial): SingleSlot => {
  */
 
 export class SlotMaterial extends MeshStandardNodeMaterial {
+
+    position: Vector3 = new Vector3();
+
     constructor() {
         super();
+    }
+
+    makeSingleSlot(material: MeshStandardNodeMaterial) {
+        return makeSingleSlot(material);
     }
 }

@@ -3,7 +3,7 @@ import { MeshBasicMaterial, MeshStandardNodeMaterial, Node, NodeMaterial, Textur
 
 
 // data that triggers an update in a material
-const refreshUniforms = [
+export const refreshUniforms = [
     'alphaMap',
     'alphaTest',
     'anisotropy',
