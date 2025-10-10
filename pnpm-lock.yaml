@@ -63,12 +63,6 @@ importers:
         specifier: ^1.6.4
         version: 1.6.4(@algolia/client-search@5.37.0)(@types/react@19.1.13)(postcss@8.5.6)(search-insights@2.17.3)(typescript@5.9.2)
 
-  apps/docs:
-    dependencies:
-      vitepress:
-        specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.37.0)(@types/react@19.1.13)(postcss@8.5.6)(search-insights@2.17.3)(typescript@5.9.2)
-
   apps/docs-astro:
     dependencies:
       '@astrojs/react':
@@ -130,34 +124,6 @@ importers:
         specifier: workspace:*
         version: link:../../packages/types
 
-  apps/examples:
-    dependencies:
-      '@cistern/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      react:
-        specifier: ^19.1.1
-        version: 19.1.1
-      react-dom:
-        specifier: ^19.1.1
-        version: 19.1.1(react@19.1.1)
-    devDependencies:
-      '@types/react':
-        specifier: ^19.1.13
-        version: 19.1.13
-      '@types/react-dom':
-        specifier: ^19.1.9
-        version: 19.1.9(@types/react@19.1.13)
-      '@vitejs/plugin-react':
-        specifier: ^5.0.3
-        version: 5.0.3(vite@7.1.7(yaml@2.8.1))
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-      vite:
-        specifier: ^7.1.7
-        version: 7.1.7(yaml@2.8.1)
-
   apps/starter:
     dependencies:
       '@cistern/core':
@@ -186,75 +152,11 @@ importers:
         specifier: ^7.1.7
         version: 7.1.7(yaml@2.8.1)
 
-  apps/studio:
-    dependencies:
-      '@cistern/camera':
-        specifier: workspace:*
-        version: link:../../packages/camera
-      '@cistern/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@cistern/r3f':
-        specifier: workspace:*
-        version: link:../../packages/r3f
-      '@react-three/drei':
-        specifier: ^10.7.6
-        version: 10.7.6(@react-three/fiber@9.3.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0))(@types/react@19.1.13)(@types/three@0.180.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)
-      '@react-three/fiber':
-        specifier: ^9.3.0
-        version: 9.3.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)
-      '@wuhhh/view-webgpu':
-        specifier: ^0.1.0
-        version: 0.1.0(@react-three/fiber@9.3.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)
-      leva:
-        specifier: ^0.10.0
-        version: 0.10.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react:
-        specifier: ^19.1.1
-        version: 19.1.1
-      react-dom:
-        specifier: ^19.1.1
-        version: 19.1.1(react@19.1.1)
-      three:
-        specifier: ^0.180.0
-        version: 0.180.0
-      valtio:
-        specifier: ^2.1.7
-        version: 2.1.7(@types/react@19.1.13)(react@19.1.1)
-    devDependencies:
-      '@cistern/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@types/react':
-        specifier: ^19.1.13
-        version: 19.1.13
-      '@types/react-dom':
-        specifier: ^19.1.9
-        version: 19.1.9(@types/react@19.1.13)
-      '@vitejs/plugin-react':
-        specifier: ^5.0.3
-        version: 5.0.3(vite@7.1.7(yaml@2.8.1))
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-      vite:
-        specifier: ^7.1.7
-        version: 7.1.7(yaml@2.8.1)
-
   packages/camera:
     dependencies:
       '@cistern/core':
         specifier: workspace:*
         version: link:../core
-      '@react-three/drei':
-        specifier: ^10.7.6
-        version: 10.7.6(@react-three/fiber@9.3.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0))(@types/react@19.1.13)(@types/three@0.180.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)
-      '@react-three/fiber':
-        specifier: ^9.3.0
-        version: 9.3.0(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)
-      react:
-        specifier: ^18.0.0 || ^19.0.0
-        version: 19.1.1
       three:
         specifier: ^0.180.0
         version: 0.180.0
