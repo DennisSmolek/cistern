@@ -14,6 +14,7 @@ export const TRAAPass = () => {
     //@ts-expect-error kdjfnb
     const build: BuildFn<typeof mul> = useCallback(({ textureNodes, camera, colorIn }) => {
         const { depth, velocity } = textureNodes;
+        console.log('Nodes going into traa', colorIn, depth, velocity);
         // get the texture from the last pass
         if (!passRef.current) passRef.current = traa(colorIn, depth, velocity, camera);
         return passRef.current;

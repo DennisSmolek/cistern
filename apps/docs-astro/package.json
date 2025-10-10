@@ -1,35 +1,36 @@
 {
-  "name": "apps-docs-astro",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@cistern/core": "workspace:*",
-    "@cistern/camera": "workspace:*",
-    "@cistern/r3f": "workspace:*",
-    "@astrojs/react": "^4.3.1",
-    "@astrojs/starlight": "^0.36.0",
-    "@react-three/drei": "^10.7.6",
-    "@react-three/fiber": "^9.3.0",
-    "@types/react": "^19.1.13",
-    "@types/react-dom": "^19.1.9",
-    "astro": "^5.6.1",
-    "camera-controls": "^3.1.0",
-    "leva": "^0.10.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "sharp": "^0.34.2",
-    "valtio": "^2.1.7",
-    "@wuhhh/view-webgpu": "^0.1.0",
-    "three": "^0.180.0"
-  },
-  "devDependencies": {
-    "@cistern/types": "workspace:*"
-  }
+    "name": "apps-docs-astro",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "astro dev",
+        "start": "astro dev",
+        "build": "astro build",
+        "preview": "astro preview",
+        "astro": "astro",
+        "deploy": "astro build && npx wrangler@latest deploy --config wrangler.toml"
+    },
+    "dependencies": {
+        "@cistern/core": "workspace:*",
+        "@cistern/camera": "workspace:*",
+        "@cistern/r3f": "workspace:*",
+        "@astrojs/react": "^4.3.1",
+        "@astrojs/starlight": "^0.36.0",
+        "@react-three/drei": "^10.7.6",
+        "@react-three/fiber": "^9.3.0",
+        "@types/react": "^19.1.13",
+        "@types/react-dom": "^19.1.9",
+        "astro": "^5.6.1",
+        "camera-controls": "^3.1.0",
+        "leva": "^0.10.0",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
+        "sharp": "^0.34.2",
+        "valtio": "^2.1.7",
+        "@wuhhh/view-webgpu": "^0.1.0",
+        "three": "^0.180.0"
+    },
+    "devDependencies": {
+        "@cistern/types": "workspace:*"
+    }
 }

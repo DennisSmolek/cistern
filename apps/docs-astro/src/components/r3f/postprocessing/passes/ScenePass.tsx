@@ -70,7 +70,8 @@ type MRTNodes = {
 export function generateScenePass(
     scene: Scene,
     camera: PerspectiveCamera,
-    options: GenerateScenePassOptions = { normal: true, velocity: false },
+    // todo: for now I say both are needed because of traa
+    options: GenerateScenePassOptions = { normal: true, velocity: true },
 ) {
     const scenePass = pass(scene, camera) as ShaderNodeObject<PassNode>;
 

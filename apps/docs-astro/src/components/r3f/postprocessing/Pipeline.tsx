@@ -96,21 +96,27 @@ export const Pipeline = ({ ref, children }: PipelineProps) => {
     }, [id]);
 
     // todo: I don't think this is needed
-    const [, bump] = useState(0);
+    const [buildStage, bump] = useState(0);
     const notify = () => bump((x) => x + 1);
 
     const register = useCallback((r: Registration) => {
         registeredPassesRef.current.set(r.id, r);
+        console.log('pipeline: registering pass', r.id);
         notify();
     }, []);
     const unregister = useCallback((id: string) => {
         registeredPassesRef.current.delete(id);
+        console.log('unregistering pass', id);
         notify();
     }, []);
 
     //* Build the Pipeline ===---
     // Compose the chain whenever registrations change or size changes
+    const oldBuildStage = useRef(buildStage);
     useLayoutEffect(() => {
+        //if (oldBuildStage.current === buildStage) return;
+        oldBuildStage.current = buildStage;
+        console.log('buildStage changed', buildStage);
         // propagate size to all passes we own
         scenePass.setSize(size.width, size.height);
 
@@ -136,9 +142,10 @@ export const Pipeline = ({ ref, children }: PipelineProps) => {
             lastPass = currentPass;
         }
         setOutputNode(lastPass);
+        console.log('Set pp output node', lastPass);
         //TODO: because I'm busy at the moment and cant wire this up, we do it direct
         postprocessing.outputNode = lastPass;
-    }, [size, scenePass, sceneTextureNodes]);
+    }, [size, scenePass, sceneTextureNodes, buildStage]);
 
     const contextValue = useMemo(
         () => ({

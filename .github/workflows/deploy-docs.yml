@@ -1,34 +1,59 @@
-name: Deploy Docs to Cloudflare Pages
+name: Deploy Docs (Cloudflare Workers)
 
 on:
-  push:
-    branches: [main]
+    push:
+        branches: [main]
+        paths:
+            - "apps/docs-astro/**"
+            - "packages/**"
+            - "pnpm-lock.yaml"
+            - "pnpm-workspace.yaml"
+            - ".github/workflows/deploy-docs.yml"
+    workflow_dispatch: {}
+
+permissions:
+    contents: read
+
+concurrency:
+    group: deploy-docs-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: "20"
+    WORKING_DIRECTORY: apps/docs-astro
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    build-and-deploy:
+        name: Build and Deploy
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 10.17.0
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 9
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: "pnpm"
 
-      - run: pnpm install
+            - name: Install dependencies (monorepo)
+              run: pnpm install --frozen-lockfile
 
-      - name: Build docs
-        run: pnpm --filter @cistern/docs build
+            - name: Build workspace packages
+              run: pnpm -w -r run build
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: cistern-docs
-          directory: apps/docs/.vitepress/dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+            - name: Build Astro docs
+              working-directory: ${{ env.WORKING_DIRECTORY }}
+              run: pnpm run build
+
+            - name: Deploy to Cloudflare Workers
+              working-directory: ${{ env.WORKING_DIRECTORY }}
+              env:
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+              run: pnpm dlx wrangler@latest deploy --config wrangler.toml

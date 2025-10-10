@@ -90,7 +90,9 @@ export const PostProcessing = ({ children }: PostprocessingProps) => {
     }, []);
 
     // We take over the render loop
-    useFrame(() => postprocessing.render(), 1);
+    useFrame(() => {
+        postprocessing.render();
+    }, 1);
 
     const contextValue: PostprocessingContextValue = {
         scene,

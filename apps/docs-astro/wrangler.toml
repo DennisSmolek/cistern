@@ -1,0 +1,11 @@
+name = "cistern-docs-astro"
+compatibility_date = "2025-10-10"
+
+[assets]
+# Directory containing the built static site produced by `astro build`
+directory = "./dist"
+
+# Optionally, define a custom domain route after first deploy or configure via dashboard
+# routes = [
+#   { pattern = "docs.example.com/*" }
+# ]
