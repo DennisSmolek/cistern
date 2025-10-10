@@ -1,3 +1,6 @@
+[![Release](https://github.com/DennisSmolek/cistern/actions/workflows/release.yml/badge.svg)](https://github.com/DennisSmolek/cistern/actions/workflows/release.yml)
+[![Deploy Docs (Cloudflare Workers)](https://github.com/DennisSmolek/cistern/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/DennisSmolek/cistern/actions/workflows/deploy-docs.yml)
+
 ## Cistern
 
 Geometry toolkit for round galleries. Monorepo managed with pnpm workspaces, Vite, tsup, Changesets, TypeDoc, and VitePress.
