@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import type { JSX } from 'react';
+//import type { JSX } from 'react';
 import type {} from '@react-three/fiber';
 import { Mesh, Vector2 } from 'three/webgpu';
 import type { CisternConfig } from '@cistern/core';
@@ -9,7 +9,7 @@ import { findMaterialChild } from '../utils';
 
 declare module '@react-three/fiber' {
     interface ThreeElements {
-        cisternMaterial: JSX.IntrinsicElements['meshStandardNodeMaterial'];
+        cisternMaterial: ThreeElements['meshStandardNodeMaterial'];
     }
 }
 
