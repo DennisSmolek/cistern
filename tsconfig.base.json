@@ -16,8 +16,7 @@
         "baseUrl": ".",
         "paths": {
             "@cistern/core": ["packages/core/src/index.ts"],
-            "@cistern/camera": ["packages/camera/src/index.ts"],
-            "three/webgpu": ["three"]
+            "@cistern/camera": ["packages/camera/src/index.ts"]
         }
     }
 }
