@@ -40,4 +40,4 @@ jobs:
                   publish: pnpm release:publish
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-                  NPM_TOKEN: cho${{ secrets.NPM_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
