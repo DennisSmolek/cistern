@@ -9,10 +9,6 @@
     "updateInternalDependencies": "patch",
     "ignore": [
         "apps-docs-astro",
-        "@cistern/types",
-        "@cistern/starter",
-        "@cistern/docs",
-        "@cistern/examples",
-        "@cistern/studio"
+        "@cistern/starter"
     ]
 }
