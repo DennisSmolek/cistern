@@ -316,7 +316,7 @@ verification. Versions verified against npm 2026-08-25.
 - [x] **D-11** [CODE] **TypeScript 5.9.2 → 6.0.3** across root + all 4
       packages + starter. ⛔ Do **not** go to 7.0.2 — see constraint 2 above.
       Re-run `pnpm build` (tsup `--dts`) after
-- [ ] **D-12** [BLOCKED by Phase 0 (Node 22)] [CODE] **Changesets 2 → 3**
+- [x] **D-12** [BLOCKED by Phase 0 (Node 22)] [CODE] **Changesets 2 → 3**
       (`@changesets/cli` `^2.27.9` → `^3.0.1`) — needs Node ≥22.11, gated on
       Phase 0. Verify `changeset version` / `changeset publish` still behave
       and `.changeset/config.json` is valid
