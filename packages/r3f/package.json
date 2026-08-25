@@ -1,6 +1,23 @@
 {
     "name": "@cistern/r3f",
     "version": "0.1.0",
+    "description": "React Three Fiber components for Cistern — <Cistern>, <CisternMesh>, <CisternCamera> galleries in the round",
+    "keywords": [
+        "react",
+        "react-three-fiber",
+        "r3f",
+        "three",
+        "webgpu",
+        "gallery",
+        "cistern"
+    ],
+    "license": "MIT",
+    "homepage": "https://cistern.studio",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DennisSmolek/cistern.git",
+        "directory": "packages/r3f"
+    },
     "private": false,
     "type": "module",
     "main": "./dist/index.cjs",
@@ -24,10 +41,10 @@
         "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch --tsconfig tsconfig.tsup.json"
     },
     "dependencies": {
-        "@cistern/camera": "workspace:*"
+        "@cistern/camera": "workspace:^"
     },
     "peerDependencies": {
-        "@cistern/core": "workspace:*",
+        "@cistern/core": "workspace:^",
         "@react-three/drei": "^10.7.6",
         "@react-three/fiber": "^9.0.0 || >=10.0.0-alpha.4 <11",
         "react": "^19.0.0",

@@ -19,7 +19,7 @@
         "format": "prettier -w .",
         "changeset": "changeset",
         "release:version": "changeset version && pnpm install --no-frozen-lockfile",
-        "release:publish": "pnpm -r build && changeset publish"
+        "release:publish": "pnpm -r build && pnpm publish -r --access public --no-git-checks && changeset tag"
     },
     "devDependencies": {
         "@changesets/cli": "^2.27.9",

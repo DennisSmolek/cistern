@@ -1,6 +1,24 @@
 {
     "name": "@cistern/core",
     "version": "0.1.0",
+    "description": "Core geometry toolkit for galleries in the round — CisternGeometry (profile-revolution BufferGeometry with sectional attributes) and TSL/WebGPU CisternMaterial",
+    "keywords": [
+        "three",
+        "threejs",
+        "webgpu",
+        "tsl",
+        "geometry",
+        "gallery",
+        "lathe",
+        "cistern"
+    ],
+    "license": "MIT",
+    "homepage": "https://cistern.studio",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DennisSmolek/cistern.git",
+        "directory": "packages/core"
+    },
     "private": false,
     "type": "module",
     "main": "./dist/index.cjs",

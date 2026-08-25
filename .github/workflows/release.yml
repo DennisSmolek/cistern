@@ -44,3 +44,6 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_PAT }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  # pnpm publish -r authenticates via setup-node's .npmrc, which
+                  # reads NODE_AUTH_TOKEN (changesets' own NPM_TOKEN is not enough)
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

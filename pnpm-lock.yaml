@@ -152,7 +152,7 @@ importers:
   packages/camera:
     dependencies:
       '@cistern/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       three:
         specifier: '>=0.185.0'
@@ -193,10 +193,10 @@ importers:
   packages/r3f:
     dependencies:
       '@cistern/camera':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../camera
       '@cistern/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       react:
         specifier: ^19.0.0

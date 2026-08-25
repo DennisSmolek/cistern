@@ -234,7 +234,7 @@ confirm `{ phase: 'render' }` actually replaces the default loop the way
       `debugColor()` behind an opt-in `debug` option so 0.2.0 doesn't ship
       random section colors (small change only — full slot-system work stays
       in the dedicated materials phase, see Deferred)
-- [ ] **P-06** [BLOCKED by P-04] [CODE] Verify: `pnpm -r build`, then inspect
+- [x] **P-06** [BLOCKED by P-04] [CODE] Verify: `pnpm -r build`, then inspect
       `packages/*/dist/index.d.ts` — grep for `globalThis.` and unresolved
       names (must be zero). Tarball test: `pnpm pack` each package, `npm init
       -y && npm i <tarball> three typescript` in a scratch dir, typecheck a
@@ -243,16 +243,16 @@ confirm `{ phase: 'render' }` actually replaces the default loop the way
 
 ### 4b. Publishing
 
-- [ ] **P-07** [CODE] Fix `workspace:*` rewriting: change root
+- [x] **P-07** [CODE] Fix `workspace:*` rewriting: change root
       `release:publish` to `pnpm publish -r --access public --no-git-checks`
       after `changeset version` (pnpm rewrites `workspace:*`; npm doesn't —
       that's how 0.1.0 broke). Update `release.yml` accordingly. Make
       `@cistern/core` a real dep (or properly-versioned peer) of `@cistern/r3f`
       instead of `workspace:*` in peerDependencies. Dry-run with `pnpm publish
       -r --dry-run` / tarball inspection
-- [ ] **P-08** [CODE] Add `repository`, `description`, `license`, `keywords` to
+- [x] **P-08** [CODE] Add `repository`, `description`, `license`, `keywords` to
       the three publishable `package.json`s (needed for provenance + npm page)
-- [ ] **P-09** [BLOCKED by D-15, F-01, P-06] [CODE] One changeset: minor →
+- [x] **P-09** [BLOCKED by D-15, F-01, P-06] [CODE] One changeset: minor →
       **0.2.0** for core/camera/r3f (new peers: three ≥0.185, fiber
       9-or-10-alpha; exported types; fixed metadata). *(Subsumes D-16.)*
       Confirm `NPM_TOKEN`/`GH_PAT` secrets are still valid; merge Version PR;

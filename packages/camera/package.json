@@ -1,6 +1,22 @@
 {
     "name": "@cistern/camera",
     "version": "0.1.0",
+    "description": "CisternCameraControls — camera-controls subclass with cistern-aware collision/boundaries for galleries in the round",
+    "keywords": [
+        "three",
+        "threejs",
+        "camera-controls",
+        "camera",
+        "gallery",
+        "cistern"
+    ],
+    "license": "MIT",
+    "homepage": "https://cistern.studio",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DennisSmolek/cistern.git",
+        "directory": "packages/camera"
+    },
     "private": false,
     "type": "module",
     "main": "./dist/index.cjs",
@@ -28,7 +44,7 @@
         "camera-controls": "^3.1.0"
     },
     "dependencies": {
-        "@cistern/core": "workspace:*"
+        "@cistern/core": "workspace:^"
     },
     "devDependencies": {
         "@cistern/types": "workspace:*",
