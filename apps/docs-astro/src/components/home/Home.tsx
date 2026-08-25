@@ -4,6 +4,7 @@ import { useSnapshot } from 'valtio';
 import { REVISION } from 'three/webgpu';
 import Fiber from '../r3f/Fiber';
 import { homeState } from './homeState';
+import { palette } from './palette';
 import { ExportPanel } from './ExportPanel';
 
 import '@fontsource/archivo/400.css';
@@ -27,6 +28,8 @@ interface HomeProps {
 export default function Home({ version }: HomeProps) {
     const { editMode } = useSnapshot(homeState);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [levaOpen, setLevaOpen] = useState(false);
+    const panelOpen = editMode || levaOpen;
     const [copied, setCopied] = useState(false);
     // null until mounted — the shell renders over the flat canvas color either way.
     const [webgpu, setWebgpu] = useState<boolean | null>(null);
@@ -49,7 +52,17 @@ export default function Home({ version }: HomeProps) {
     };
 
     return (
-        <div className={`home${editMode ? ' home--edit' : ''}`}>
+        <div
+            className={`home${editMode ? ' home--edit' : ''}`}
+            style={
+                {
+                    // Load-time palette: UI accent + canvas ground align with the scene.
+                    '--accent': palette.accent,
+                    '--accent-hi': palette.accentHi,
+                    '--bg-canvas': palette.primaryDark,
+                } as React.CSSProperties
+            }
+        >
             <div className="home-canvas">{webgpu && <Fiber />}</div>
             <div className="home-scrim" />
 
@@ -137,12 +150,38 @@ export default function Home({ version }: HomeProps) {
                     <span className="d-only"> · SSGI → FSR3</span>
                 </span>
                 <span>
-                    built by <a href="https://smolek.dev">smolek.dev</a>
+                    built by <a href="https://smolek.dev">Dennis Smolek</a>
                 </span>
             </footer>
 
             <div className="home-leva">
-                <Leva key={editMode ? 'open' : 'closed'} fill collapsed={!editMode} />
+                {!editMode && (
+                    <button
+                        type="button"
+                        className="home-gear"
+                        aria-label="Scene settings"
+                        aria-expanded={panelOpen}
+                        onClick={() => setLevaOpen((o) => !o)}
+                    >
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            aria-hidden="true"
+                        >
+                            <line x1="1" y1="5" x2="15" y2="5" />
+                            <circle cx="6" cy="5" r="2.2" fill="var(--bg-page)" />
+                            <line x1="1" y1="11" x2="15" y2="11" />
+                            <circle cx="10" cy="11" r="2.2" fill="var(--bg-page)" />
+                        </svg>
+                    </button>
+                )}
+                {/* Always mounted (an unmounted Leva re-mounts its own floating
+                    default panel); the gear/edit mode toggles visibility. */}
+                <Leva fill collapsed={false} hidden={!panelOpen} />
                 {editMode && <ExportPanel />}
             </div>
             {editMode && (

@@ -2,6 +2,10 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
 import {
+    ACESFilmicToneMapping,
+    AgXToneMapping,
+    NeutralToneMapping,
+    NoToneMapping,
     Vector2,
     RenderPipeline as ThreePostProcessing,
     type PerspectiveCamera,
@@ -57,8 +61,34 @@ export const FSRPipeline = () => {
         { collapsed: true },
     );
 
+    // Renderer-level controls — tone mapping is applied by the pipeline's
+    // final output transform, so it composes with FSR3's linear/HDR output.
+    const { toneMapping, exposure } = useControls(
+        'Renderer',
+        {
+            toneMapping: {
+                label: 'Tone mapping',
+                value: ACESFilmicToneMapping,
+                options: {
+                    'ACES Filmic': ACESFilmicToneMapping,
+                    AgX: AgXToneMapping,
+                    Neutral: NeutralToneMapping,
+                    None: NoToneMapping,
+                },
+            },
+            exposure: { label: 'Exposure', value: 1, min: 0.1, max: 3, step: 0.05 },
+        },
+        { collapsed: true },
+    );
+
     const post = useMemo(() => new ThreePostProcessing(renderer), [renderer]);
     const fsrRef = useRef<FSRNode | null>(null);
+
+    useEffect(() => {
+        renderer.toneMapping = toneMapping;
+        renderer.toneMappingExposure = exposure;
+        post.needsUpdate = true;
+    }, [renderer, post, toneMapping, exposure]);
 
     useEffect(() => {
         const cam = camera as unknown as PerspectiveCamera;

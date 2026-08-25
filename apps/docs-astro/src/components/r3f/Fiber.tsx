@@ -4,10 +4,11 @@ import WebGPUCanvas from './WebGPUCanvas';
 import { DotVisualizer } from './control/DotsVisualizer';
 import { FSRPipeline } from './postprocessing/FSRPipeline';
 import { CameraRig } from '../home/CameraRig';
+import { palette } from '../home/palette';
 
 export default function Fiber() {
     const { backgroundColor } = useControls('Scene', {
-        backgroundColor: '#141210',
+        backgroundColor: palette.primaryDark,
     });
 
     return (
