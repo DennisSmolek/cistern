@@ -348,7 +348,7 @@ preview`, starter build.
       `DennisSmolek/cistern`
 - [x] **R-11** [CODE] Replace the unmodified Starlight starter
       `apps/docs-astro/README.md`
-- [ ] **D-20** [CODE] Confirm the Cloudflare Workers docs deploy succeeds on
+- [x] **D-20** [CODE] Confirm the Cloudflare Workers docs deploy succeeds on
       the new toolchain
 
 **Verify:** click every nav/hero link in `astro preview`; deploy and
