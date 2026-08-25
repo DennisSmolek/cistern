@@ -17,7 +17,6 @@ import {
     PostProcessing as ThreePostProcessing,
     PassNode,
 } from 'three/webgpu';
-import { type ShaderNodeObject } from 'three/tsl';
 import {
     ScenePass,
     type StandardScenePassTextureNodes,
@@ -25,7 +24,7 @@ import {
 } from './passes/ScenePass';
 import { Pipeline, type PipelineRef } from './Pipeline';
 
-type Pass = ShaderNodeObject<PassNode>;
+type Pass = PassNode;
 
 //* Postprocessing Context ==============================
 

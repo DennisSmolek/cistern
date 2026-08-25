@@ -3,7 +3,6 @@
 import {
     attribute, Fn, texture, uniform, normalLocal, If, vec4, uv,
     positionLocal, float,
-    ShaderNodeObject,
     and
 } from "three/tsl";
 import { MeshStandardNodeMaterial, Node, Texture, FrontSide, UniformNode, Vector4 } from "three/webgpu";
@@ -15,48 +14,50 @@ import { MeshStandardNodeMaterial, Node, Texture, FrontSide, UniformNode, Vector
 
 export const Section = Fn(() => {
     // Use f32 and keep triangles within a section so values stay constant per face
-    return attribute('sectionId', 'f32');
+    return attribute<'float'>('sectionId', 'float');
 });
 
 
 // Section Percentage: the percentage within the section (usefull for UV replacement)
 export const SectionPercentage = Fn(() => {
-    return attribute('sectionPercentage', 'f32');
+    return attribute<'float'>('sectionPercentage', 'float');
 });
 
 
 // Circular UV: the UV coordinates on the circle (make squares of floor/ceiling)
 export const CircularUV = Fn(() => {
-    return attribute('circularUV', 'vec2');
+    return attribute<'vec2'>('circularUV', 'vec2');
 });
 
-export const IsSection = Fn(([sectionNumber]: [FnArg]) => {
+// Plain function composing TSL nodes (not Fn-wrapped: three's runtime expects
+// Fn args as a single array/object, which @types/three 0.185 no longer models)
+export const IsSection = (sectionNumber: number | Node<'float'>) => {
     const section = Section();
-    const num = float(sectionNumber);
+    const num = typeof sectionNumber === 'number' ? float(sectionNumber) : sectionNumber;
     // Use a small band to account for any numerical noise; triangles are pruned across sections
     return and(section.greaterThan(num.sub(0.2)), section.lessThan(num.add(0.2)));
-});
+};
 
 
 // check if we are these common sections
 export const IsPedestal = Fn(() => {
     // pedestal section is 0
-    return IsSection([0]);
+    return IsSection(0);
 });
 
 export const IsWall = Fn(() => {
     // wall section is 3
-    return IsSection([3]);
+    return IsSection(3);
 });
 
 export const IsFloor = Fn(() => {
     // floor is 1
-    return IsSection([1]);
+    return IsSection(1);
 });
 
 export const IsCeiling = Fn(() => {
     // ceiling is 5
-    return IsSection([5]);
+    return IsSection(5);
 });
 
 /* Default Nodes (We expect these to be replaced but if not we need to inject something) */
@@ -130,7 +131,7 @@ export class CisternMaterial extends MeshStandardNodeMaterial {
         const baseColorNode = Fn(() => {
             const outputColor = rootColor.toVar('outputColor');
             /*
-            const sectionNumber = attribute('sectionId', 'f32');
+            const sectionNumber = attribute<'float'>('sectionId', 'float');
             If(sectionNumber.equal(0), () => {
                 outputColor.assign(vec4(1, 1, 0, 1));
             }).ElseIf(and(sectionNumber.greaterThan(0.8), sectionNumber.lessThan(1.2)), () => {
@@ -222,10 +223,8 @@ type NodeSet = {
 type SectionKey = 'pedestal' | 'floor' | 'wall' | 'ceiling';
 type SectionVariant = 'map' | 'normal' | 'vertex';
 
-type BoolUniform = ShaderNodeObject<UniformNode<boolean>>;
-// type ColorUniform = ShaderNodeObject<UniformNode<Node>>;
-
-type ColorUniform = ShaderNodeObject<UniformNode<Vector4>>;
+type BoolUniform = UniformNode<'bool', boolean>;
+type ColorUniform = UniformNode<'vec4', Vector4>;
 
 type SectionUniforms = {
     useColor: BoolUniform;

@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useId, useRef } from 'react';
-import type TRAANode from 'three/examples/jsm/tsl/display/TRAANode.js';
-import type { ShaderNodeObject } from 'three/tsl';
+import type TRAANode from 'three/addons/tsl/display/TRAANode.js';
 import { usePipeline } from '../Pipeline';
-import { traa } from 'three/examples/jsm/tsl/display/TRAANode.js';
+import { traa } from 'three/addons/tsl/display/TRAANode.js';
 
 export const TRAAPass = () => {
     const { register, unregister } = usePipeline();
     const id = useId();
-    const passRef = useRef<ShaderNodeObject<TRAANode> | null>(null);
+    const passRef = useRef<TRAANode | null>(null);
 
     // Node Builder
     // todo: move this to a util?

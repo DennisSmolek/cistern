@@ -1,6 +1,6 @@
 // * Scene Pass ==============================
 import { useImperativeHandle, useMemo, useState } from 'react';
-import { normalView, pass, velocity, mrt, type ShaderNodeObject, output } from 'three/tsl';
+import { normalView, pass, velocity, mrt, output } from 'three/tsl';
 import { usePostprocessing } from '../Postprocessing';
 import type {
     PassNode,
@@ -15,7 +15,7 @@ import type {
 type Vel = typeof velocity;
 
 interface NodeRef {
-    pass: ShaderNodeObject<PassNode>;
+    pass: PassNode;
     textureNodes: StandardScenePassTextureNodes;
 }
 interface ScenePassProps {
@@ -25,11 +25,11 @@ interface ScenePassProps {
 }
 
 export interface StandardScenePassTextureNodes {
-    output: ShaderNodeObject<TextureNode>;
-    normal?: ShaderNodeObject<TextureNode>;
-    depth: ShaderNodeObject<TextureNode>;
-    velocity?: ShaderNodeObject<TextureNode>;
-    previousOutput: ShaderNodeObject<ThreeNode>; // this has to be a bug
+    output: TextureNode;
+    normal?: TextureNode;
+    depth: TextureNode;
+    velocity?: TextureNode;
+    previousOutput: ThreeNode; // this has to be a bug
 }
 
 export const ScenePass = ({ ref, overridable: _overridable = false, ..._rest }: ScenePassProps) => {
@@ -62,8 +62,8 @@ interface GenerateScenePassOptions {
 }
 
 type MRTNodes = {
-    output: ShaderNodeObject<PropertyNode>;
-    normal?: ShaderNodeObject<VarNode>;
+    output: PropertyNode<'vec4'>;
+    normal?: ThreeNode;
     velocity?: Vel;
 };
 
@@ -73,7 +73,10 @@ export function generateScenePass(
     // todo: for now I say both are needed because of traa
     options: GenerateScenePassOptions = { normal: true, velocity: true },
 ) {
-    const scenePass = pass(scene, camera) as ShaderNodeObject<PassNode>;
+    // samples: 0 — since r185 PassNode inherits renderer.samples (4 with WebGPU
+    // antialias), but TRAA's depth-history copyTextureToTexture cannot copy a
+    // multisampled texture; TRAA provides the anti-aliasing itself.
+    const scenePass = pass(scene, camera, { samples: 0 }) as PassNode;
 
     // determine if we need MRT, and if so, which nodes
     // if there is no options or all of the values are false we dont even need MRT

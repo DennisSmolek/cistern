@@ -12,7 +12,6 @@ import React, {
     useId,
     useContext,
 } from 'react';
-import { type ShaderNodeObject } from 'three/tsl';
 import {
     TextureNode,
     PerspectiveCamera,
@@ -179,13 +178,13 @@ function processChildrenPasses(
     });
 }
 
-const getColorTextureNode = (node: ColorNode): ShaderNodeObject<TextureNode> => {
+const getColorTextureNode = (node: ColorNode): TextureNode => {
     const n = node as unknown as {
-        getTextureNode?: () => ShaderNodeObject<TextureNode>;
+        getTextureNode?: () => TextureNode;
     };
     return typeof n?.getTextureNode === 'function'
         ? n.getTextureNode()
-        : (node as ShaderNodeObject<TextureNode>);
+        : (node as TextureNode);
 };
 
 export const usePipeline = () => {

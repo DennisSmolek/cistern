@@ -6,7 +6,17 @@ import { SimpleWebGPUProgressiveLightMap } from './progressivelm';
 import { ShadowNodeMaterial } from './shadowNodeMaterial';
 
 // extend here so we know it imported
-extend({ ShadowNodeMaterial });
+// Named to avoid colliding with three/webgpu's own ShadowNodeMaterial export,
+// which ThreeToJSXElements maps to <shadowNodeMaterial>
+extend({ CisternShadowMaterial: ShadowNodeMaterial });
+
+declare module '@react-three/fiber' {
+    interface ThreeElements {
+        cisternShadowMaterial: ThreeElements['meshPhongMaterial'] & {
+            blend?: number;
+        };
+    }
+}
 
 export type ForwardRefComponent<P, T> = ForwardRefExoticComponent<
   PropsWithoutRef<P> & RefAttributes<T>
@@ -165,7 +175,7 @@ export const AccumulativeShadows: ForwardRefComponent<
         </group>
         <mesh receiveShadow ref={gPlane} scale={scale} rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry />
-          <shadowNodeMaterial
+          <cisternShadowMaterial
             transparent
             depthWrite={false}
             toneMapped={toneMapped}

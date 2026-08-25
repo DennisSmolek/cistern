@@ -2,10 +2,9 @@ import { useEffect, useId, useRef, useCallback, useMemo } from 'react';
 import { usePostprocessing } from '../Postprocessing';
 import GTAONode, { ao } from 'three/addons/tsl/display/GTAONode.js';
 import type { TextureNode } from 'three/webgpu';
-import { float, type ShaderNodeObject, type mul } from 'three/tsl';
+import { float, uniform, type mul } from 'three/tsl';
 import { updatePass } from './passUtils';
 import { usePipeline } from '../Pipeline';
-import { uniform } from 'three/src/nodes/core/UniformNode.js';
 
 type AOProps = {
     radius?: number;
@@ -32,7 +31,7 @@ export function AOPass({
 }: AOProps) {
     const { register, unregister, rebuild } = usePipeline();
     const id = useId();
-    const passRef = useRef<ShaderNodeObject<GTAONode> | null>(null);
+    const passRef = useRef<GTAONode | null>(null);
 
     const uniforms = useMemo(() => {
         return {
@@ -78,7 +77,9 @@ export function AOPass({
             const aoTex = passRef.current.getTextureNode();
             const maxGamma = float(4);
             const gamma = float(uniforms.strength).mul(maxGamma.sub(1)).add(1); // 0->1 maps to 1->4
-            return output.mul(aoTex.pow(gamma));
+            // since r181 GTAO writes AO only into the r channel — multiply by the
+            // scalar, not the texture rgb (g/b would zero the frame)
+            return output.mul(aoTex.r.pow(gamma));
         },
         [update],
     );
