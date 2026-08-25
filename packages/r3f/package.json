@@ -20,8 +20,8 @@
         "access": "public"
     },
     "scripts": {
-        "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean --tsconfig tsconfig.json",
-        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch --tsconfig tsconfig.json"
+        "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean --tsconfig tsconfig.tsup.json",
+        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch --tsconfig tsconfig.tsup.json"
     },
     "dependencies": {
         "@cistern/camera": "workspace:*"

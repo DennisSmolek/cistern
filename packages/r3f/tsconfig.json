@@ -1,11 +1,11 @@
 {
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-        "composite": false,
+        "composite": true,
         "declaration": true,
         "declarationMap": true,
-        "emitDeclarationOnly": false,
-        "outDir": "dist",
+        "emitDeclarationOnly": true,
+        "outDir": "dist-tsc",
         "rootDir": "src",
         "paths": {},
         "types": ["@cistern/types", "@types/three"]

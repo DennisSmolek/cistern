@@ -1,9 +1,0 @@
-{
-  "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "packages/core/src/index.ts"
-  ],
-  "out": "apps/docs/api",
-  "tsconfig": "packages/core/tsconfig.json",
-  "cleanOutputDir": true
-}

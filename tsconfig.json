@@ -3,10 +3,8 @@
   "references": [
     { "path": "packages/core" },
     { "path": "packages/camera" },
-    { "path": "apps/studio" },
-    { "path": "apps/starter" },
-    { "path": "apps/examples" },
-    { "path": "apps/docs" }
+    { "path": "packages/r3f" },
+    { "path": "apps/starter" }
   ],
   "extends": "./tsconfig.base.json"
 }

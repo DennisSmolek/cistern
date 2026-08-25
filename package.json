@@ -3,21 +3,17 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
-    "packageManager": "pnpm@10.17.0",
+    "packageManager": "pnpm@11.23.0",
     "engines": {
-        "node": ">=20.11.0",
-        "pnpm": ">=10.0.0"
+        "node": ">=22.12.0",
+        "pnpm": ">=11.0.0"
     },
     "scripts": {
         "build": "pnpm -r build",
         "dev": "pnpm -r --parallel --stream --filter @cistern/core --filter @cistern/camera --filter @cistern/r3f --filter apps-docs-astro dev",
-        "dev:studio": "pnpm --filter @cistern/studio dev",
-        "dev:docs": "pnpm --filter @cistern/docs dev",
-        "docs:api": "pnpm --filter @cistern/docs run build:api",
-        "docs:build": "pnpm --filter @cistern/docs run build",
-        "docs:preview": "pnpm --filter @cistern/docs run preview",
+        "dev:docs": "pnpm --filter apps-docs-astro dev",
         "dev:starter": "pnpm --filter @cistern/starter dev",
-        "dev:examples": "pnpm --filter @cistern/examples dev",
+        "typecheck": "tsc -b",
         "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
         "format": "prettier -w .",
         "changeset": "changeset",
@@ -39,10 +35,8 @@
         "eslint-plugin-tsdoc": "^0.4.0",
         "prettier": "^3.6.2",
         "tsup": "^8.5.0",
-        "typedoc": "^0.28.13",
         "typescript": "^5.9.2",
         "typescript-eslint": "^8.44.0",
-        "vite": "^7.1.7",
-        "vitepress": "^1.6.4"
+        "vite": "^7.1.7"
     }
 }

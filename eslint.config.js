@@ -4,7 +4,7 @@ import tsdoc from 'eslint-plugin-tsdoc';
 
 export default [
   {
-    ignores: ['dist', 'node_modules'],
+    ignores: ['**/dist', '**/dist-tsc', '**/node_modules', '**/.astro'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
