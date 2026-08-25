@@ -1,5 +1,5 @@
 // Declare these types globally so they are available everywhere without import/export
-import type { Node, PassNode, TextureNode, Scene, PerspectiveCamera, WebGPURenderer, ThreePostProcessing } from "three/webgpu";
+import type { Node, PassNode, TextureNode, Scene, PerspectiveCamera, WebGPURenderer, RenderPipeline as ThreePostProcessing } from "three/webgpu";
 import type GTAONode from "three/addons/tsl/display/GTAONode.js";
 
 declare global {

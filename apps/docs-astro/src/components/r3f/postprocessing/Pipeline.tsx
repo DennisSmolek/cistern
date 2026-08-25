@@ -17,7 +17,7 @@ import {
     PerspectiveCamera,
     Scene,
     WebGPURenderer,
-    PostProcessing as ThreePostProcessing,
+    RenderPipeline as ThreePostProcessing,
 } from 'three/webgpu';
 import { usePostprocessing } from './Postprocessing';
 import type { StandardScenePassTextureNodes } from './passes/ScenePass';

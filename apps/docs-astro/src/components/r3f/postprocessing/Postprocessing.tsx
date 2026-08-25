@@ -14,7 +14,7 @@ import {
     WebGPURenderer,
     Scene,
     PerspectiveCamera,
-    PostProcessing as ThreePostProcessing,
+    RenderPipeline as ThreePostProcessing,
     PassNode,
 } from 'three/webgpu';
 import {
@@ -55,8 +55,8 @@ interface PostprocessingProps {
     children: React.ReactNode;
 }
 export const PostProcessing = ({ children }: PostprocessingProps) => {
-    const { gl, scene, camera, size } = useThree();
-    const renderer = useMemo(() => gl as unknown as WebGPURenderer, [gl]);
+    const { renderer: r3fRenderer, scene, camera, size } = useThree();
+    const renderer = useMemo(() => r3fRenderer as unknown as WebGPURenderer, [r3fRenderer]);
     const postprocessing = useMemo(() => new ThreePostProcessing(renderer), [renderer]);
 
     /* Setup a Root Pass, most will use this one by default */
@@ -88,10 +88,10 @@ export const PostProcessing = ({ children }: PostprocessingProps) => {
         console.log('rebuild when the piplelines are figured out');
     }, []);
 
-    // We take over the render loop
+    // We take over the render loop (v10: the render phase replaces the default render)
     useFrame(() => {
         postprocessing.render();
-    }, 1);
+    }, { phase: 'render' });
 
     const contextValue: PostprocessingContextValue = {
         scene,

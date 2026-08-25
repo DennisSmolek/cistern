@@ -29,7 +29,7 @@ export const ChangingCistern = ({
       <CisternMesh ref={meshRef} config={config}>
         <meshStandardMaterial color="pink" />
       </CisternMesh>
-      <CisternMesh {...props} ref={wireFrameRef} config={config}>
+      <CisternMesh ref={wireFrameRef} config={config}>
         <meshStandardMaterial color="black" wireframe transparent opacity={0.5} />
       </CisternMesh>
     </group>

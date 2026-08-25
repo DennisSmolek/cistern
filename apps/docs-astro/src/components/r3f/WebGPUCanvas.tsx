@@ -1,56 +1,21 @@
-import * as THREE from 'three/webgpu';
-import {
-    Canvas,
-    extend,
-    type ThreeToJSXElements,
-    type CanvasProps,
-    useFrame,
-} from '@react-three/fiber';
+import { Canvas, type CanvasProps } from '@react-three/fiber';
 import React from 'react';
 
-declare module '@react-three/fiber' {
-    interface ThreeElements extends ThreeToJSXElements<typeof THREE> {
-        // brand to keep the interface non-empty for linters/TS
-        __webgpuBrand?: never;
-    }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-extend(THREE as any);
-
 /**
+ * WebGPUCanvas wraps the R3F v10 Canvas with WebGPU enabled.
  *
- * WebGPUCanvas is a React component that wraps the R3F Canvas,
- * initializing it with a THREE.WebGPURenderer for WebGPU support.
+ * Fiber v10 initializes a WebGPURenderer itself when the `renderer` prop is
+ * used (the v9-era async `gl` factory bootstrap is gone), and it registers and
+ * types the whole three/webgpu namespace natively — no extend()/ThreeElements
+ * augmentation needed here anymore.
  */
 
-type WebGPUCanvasProps = CanvasProps;
+export type WebGPUCanvasProps = CanvasProps;
 
-const WebGPUCanvas: React.FC<WebGPUCanvasProps> = ({ children, ...rest }) => (
-    <Canvas
-        shadows
-        {...rest}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        gl={async (props: any) => {
-            // Create a new WebGPURenderer and initialize it
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const renderer = new THREE.WebGPURenderer(props as any);
-            await renderer.init();
-            return renderer;
-        }}
-    >
+const WebGPUCanvas: React.FC<WebGPUCanvasProps> = ({ children, renderer, ...rest }) => (
+    <Canvas shadows renderer={renderer ?? { antialias: true }} {...rest}>
         {children}
-        <RendererHelper />
     </Canvas>
 );
 
 export default WebGPUCanvas;
-
-// to help the weird renderer issues
-const RendererHelper = () => {
-    useFrame(({ gl, scene, camera }) => {
-        //  gl.render(scene, camera);
-    }, 1);
-
-    return null;
-};

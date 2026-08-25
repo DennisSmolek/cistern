@@ -1,4 +1,3 @@
-import { View } from '@wuhhh/view-webgpu';
 import { useControls } from 'leva';
 import Scene from './Scene';
 import WebGPUCanvas from './WebGPUCanvas';
@@ -23,28 +22,14 @@ export default function Fiber() {
                     height: '100%',
                     zIndex: 10,
                 }}
-                gl={{ antialias: true }}
+                renderer={{ antialias: true }}
             >
-                {/* <View.Port /> */}
-
                 {/* Camera Controls */}
                 <DotVisualizer />
 
                 <Scene />
                 <PPDemo />
             </WebGPUCanvas>
-            <View
-                index={2}
-                style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                    width: '150px',
-                    height: '150px',
-                    background: 'lightblue',
-                    zIndex: 1,
-                }}
-            ></View>
         </div>
     );
 }

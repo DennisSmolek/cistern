@@ -117,27 +117,27 @@ fix them, don't loosen tsconfig.
 
 ## Phase 2 — three 0.185 bump (still fiber 9) — own commit
 
-- [ ] **D-14** [CODE] `three` `^0.180.0` → `^0.185.1` and `@types/three`
+- [x] **D-14** [CODE] `three` `^0.180.0` → `^0.185.1` and `@types/three`
       `^0.180.0` → `^0.185.4`
-- [ ] **D-15** [BLOCKED by D-14] [CODE] Update the `three` **peerDependency
+- [x] **D-15** [BLOCKED by D-14] [CODE] Update the `three` **peerDependency
       range** in `@cistern/core`, `@cistern/camera`, `@cistern/r3f` (all
       currently `^0.180.0`) → `>=0.185.0`. This is a consumer-visible change
       *(the changeset for this ships together with the fiber-v10 peer bump —
       see note below and P-09)*
-- [ ] **D-21** [BLOCKED by D-14] [CODE] Normalize import hazards:
+- [x] **D-21** [BLOCKED by D-14] [CODE] Normalize import hazards:
       `TRAAPass.tsx` `three/examples/jsm/tsl/display/TRAANode.js` →
       `three/addons/tsl/display/TRAANode.js` (dual-module-instance hazard);
       `AOPass.tsx` `three/src/nodes/core/UniformNode.js` → `uniform` from `three/tsl`
-- [ ] **D-22** [BLOCKED by D-14] [CODE] Re-evaluate the hand-written TSL type
+- [x] **D-22** [BLOCKED by D-14] [CODE] Re-evaluate the hand-written TSL type
       patches `packages/types/three-tsl-layout.d.ts` / `three-tsl-fn.d.ts`
       ("remove once upstream updated"): drop the `/// <reference>` lines in
       `packages/core/src/globals.d.ts`, run `tsc -b`; delete the patches if
       0.185 types cover `Fn` layouts, else keep and note why
-- [ ] **D-23** [BLOCKED by D-14] [CODE] Fix TSL/node API churn surfaced by the
+- [x] **D-23** [BLOCKED by D-14] [CODE] Fix TSL/node API churn surfaced by the
       compiler in `CisternMaterial.ts`, `shadowNodeMaterial.ts`,
       `progressivelm.ts`, and the postprocessing passes (three r181–r185
       migration notes)
-- [ ] **D-17** [BLOCKED by D-14, D-21..D-23] [CODE] Smoke-test the WebGPU path:
+- [x] **D-17** [BLOCKED by D-14, D-21..D-23] [CODE] Smoke-test the WebGPU path:
       install/build/typecheck/test green; visual pass vs the Phase 0 screenshot
       (geometry, accumulative shadows, AO/TRAA postprocessing); zero WebGPU
       validation errors in console. Commit standalone (`chore: three 0.185`) —
@@ -155,46 +155,46 @@ here on purpose.
 
 ## Phase 3 — @react-three/fiber 10.0.0-alpha.4
 
-- [ ] **F-01** [CODE] Versions: `apps/docs-astro/package.json` fiber → exact
+- [x] **F-01** [CODE] Versions: `apps/docs-astro/package.json` fiber → exact
       `10.0.0-alpha.4`; **remove `@wuhhh/view-webgpu`**.
       `packages/r3f/package.json`: devDep fiber exact `10.0.0-alpha.4`, peer
       fiber `^9.0.0 || >=10.0.0-alpha.4 <11`, peer react/react-dom →
       `^19.0.0` (drop 18), drei devDep → `^10.7.8`
-- [ ] **H-12** [CODE] *(done early here, not in the design lane)* `Fiber.tsx`:
+- [x] **H-12** [CODE] *(done early here, not in the design lane)* `Fiber.tsx`:
       delete the `View` import, the dead `<View index={2}>` block, and the
       commented `<View.Port />` — removes the stray lightblue box from the
       live homepage
-- [ ] **F-02** [CODE] `WebGPUCanvas.tsx`: replace the async `gl` factory with
+- [x] **F-02** [CODE] `WebGPUCanvas.tsx`: replace the async `gl` factory with
       v10's `renderer` prop (first-class WebGPU auto-init). Stay on the root
       `'@react-three/fiber'` entrypoint (not `/webgpu`) — the `ThreeElements`
       augmentation in `packages/types/r3f.d.ts` targets that module specifier
-- [ ] **F-03** [CODE] `WebGPUCanvas.tsx`: delete the `RendererHelper` dummy
+- [x] **F-03** [CODE] `WebGPUCanvas.tsx`: delete the `RendererHelper` dummy
       `useFrame(cb, 1)` entirely (dead render-takeover)
-- [ ] **F-04** [CODE] `WebGPUCanvas.tsx`: keep `extend(THREE)` + the
+- [x] **F-04** [CODE] `WebGPUCanvas.tsx`: keep `extend(THREE)` + the
       `ThreeToJSXElements` module augmentation only if `astro check` still
       needs them under v10; remove if the catalogue/types are provided
-- [ ] **F-05** [CODE] Check callers (`Fiber.tsx`, `ExampleEmbed.tsx`) passing
+- [x] **F-05** [CODE] Check callers (`Fiber.tsx`, `ExampleEmbed.tsx`) passing
       `gl={{ antialias: true }}` (currently silently discarded) — pass through
       `renderer={{...}}` properly
-- [ ] **F-06** [CODE] `Postprocessing.tsx`: `useFrame(() => postprocessing.render(), 1)`
+- [x] **F-06** [CODE] `Postprocessing.tsx`: `useFrame(() => postprocessing.render(), 1)`
       → `{ phase: 'render' }`; `gl` → `renderer` (drop `as unknown as
       WebGPURenderer` casts if v10 types it). Do **not** rewrite the pipeline
       onto v10 `usePostProcessing` — optional follow-up only (see Deferred)
-- [ ] **F-07** [CODE] `Scene.tsx`: `state.clock.elapsedTime` → `elapsed` from
+- [x] **F-07** [CODE] `Scene.tsx`: `state.clock.elapsedTime` → `elapsed` from
       the frame callback arg
-- [ ] **F-08** [CODE] `AccumulativeShadowsWebGPU.tsx`: `state.gl` →
+- [x] **F-08** [CODE] `AccumulativeShadowsWebGPU.tsx`: `state.gl` →
       `state.renderer`; audit its `useFrame`/`invalidate` usage
-- [ ] **F-09** [CODE] `packages/r3f/src/utils.ts`: verify `findMaterialChild`'s
+- [x] **F-09** [CODE] `packages/r3f/src/utils.ts`: verify `findMaterialChild`'s
       `typeof type === 'string'` intrinsic assumption still holds in v10
       (silent-failure risk: `CisternMesh` could overwrite user materials).
       While in `Cistern.tsx`, fix the `cisternPosition` `useMemo` that reads
       `meshRef.current` on first render (always `(0,0,0)`)
-- [ ] **F-10** [CODE] Runtime-verify drei surface: `CameraControls impl=
+- [x] **F-10** [CODE] Runtime-verify drei surface: `CameraControls impl=
       {CisternCameraControls}` (`CisternCamera.tsx`), `Environment`,
       `useHelper`, `Backdrop`, `Sphere`, `useGLTF`. Fallback if drei's
       CameraControls breaks under v10: wire `CisternCameraControls` manually
       (drei is a thin wrapper there)
-- [ ] **F-11** [CODE] Verify: install (expect only drei peer warnings),
+- [x] **F-11** [CODE] Verify: install (expect only drei peer warnings),
       `pnpm -r build`, `pnpm typecheck`, `astro check`, `pnpm test`; full
       visual pass vs the Phase 0 screenshot (animation timing, orbit controls,
       shadow convergence, postprocessing); clear **all** v10 deprecation
@@ -403,7 +403,7 @@ Everything else here is untouched and still pending.
 
 - [ ] **H-10** Rebuild `src/pages/index.astro` from the handoff spec
 - [ ] **H-11** Hide the leva panel in production builds (currently always visible on `/`)
-- [ ] **H-12** ~~Remove or repurpose the floating lightblue `<View index={2}>` debug box in `Fiber.tsx`~~
+- [x] **H-12** ~~Remove or repurpose the floating lightblue `<View index={2}>` debug box in `Fiber.tsx`~~
       — done early, Phase 3 (F-01) of the code lane (see checklist above)
 - [ ] **H-13** Move the hardcoded `backgroundColor: '#1a1a1a'` into a shared design token
 - [ ] **H-14** Implement the WebGPU fallback + canvas loading state (H-07, H-08)

@@ -22,7 +22,7 @@ export function ExampleEmbed({ width = '100%', height = 400 }: ExampleEmbedProps
       <WebGPUCanvas
         camera={{ position: [6, 6, 6], fov: 60 }}
         style={{ background: '#0b0b0b' }}
-        gl={{ antialias: true }}
+        renderer={{ antialias: true }}
       >
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={1} />

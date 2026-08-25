@@ -88,7 +88,7 @@ export const AccumulativeShadows: ForwardRefComponent<
     },
     forwardRef,
   ) => {
-    const gl = useThree((state) => state.gl as unknown as THREE.WebGPURenderer);
+    const gl = useThree((state) => state.renderer as unknown as THREE.WebGPURenderer);
     const scene = useThree((state) => state.scene);
     const camera = useThree((state) => state.camera);
     const invalidate = useThree((state) => state.invalidate);

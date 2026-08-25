@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type {} from '@react-three/fiber';
 import { Mesh, Vector2, Vector3 } from 'three/webgpu';
 import { ThreeElements } from '@react-three/fiber';
@@ -37,10 +37,17 @@ export const Cistern: React.FC<CisternProps> = ({
     //controlsRef.current.setLookAt(41, 50, 20, 21, 20, 0);
   }, []);
 
-  // because r3f does "VectorLike we need to get it after the update"
-  const cisternPosition = useMemo(() => {
-    if (!meshRef.current) return new Vector3(0, 0, 0);
-    return meshRef.current.position;
+  // forward the mesh to the caller's ref while keeping our own
+  useEffect(() => {
+    if (ref) ref.current = meshRef.current;
+  });
+
+  // because r3f does "VectorLike we need to get it after the update":
+  // read the live position vector once the mesh exists (three mutates it in
+  // place, so the reference stays current)
+  const [cisternPosition, setCisternPosition] = useState(() => new Vector3(0, 0, 0));
+  useEffect(() => {
+    if (meshRef.current) setCisternPosition(meshRef.current.position);
   }, []);
 
   // memoize the config
@@ -49,7 +56,7 @@ export const Cistern: React.FC<CisternProps> = ({
   return (
     <>
       <CisternMesh
-        ref={ref}
+        ref={meshRef}
         {...props}
         config={memoizedConfig}
         onConfigChange={onConfigChange}

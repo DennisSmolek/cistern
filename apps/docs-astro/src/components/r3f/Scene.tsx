@@ -20,10 +20,10 @@ function AnimatedSphere() {
   const floatSpeed = 2;
   const floatHeight = 1;
 
-  useFrame((state) => {
+  useFrame(({ elapsed }) => {
     if (meshRef.current) {
       meshRef.current.position.y =
-        position[1] + Math.sin(state.clock.elapsedTime * floatSpeed) * floatHeight;
+        position[1] + Math.sin(elapsed * floatSpeed) * floatHeight;
     }
   });
 
