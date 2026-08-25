@@ -343,7 +343,7 @@ preview`, starter build.
       guide (install `@cistern/core`/`@cistern/r3f@0.2.0`, minimal
       `<Cistern>` snippet); delete or stub-honestly the template
       examples/reference pages
-- [ ] **R-05** [CODE] Fix the Starlight `social` link in `astro.config.mjs` —
+- [x] **R-05** [CODE] Fix the Starlight `social` link in `astro.config.mjs` —
       it points at `github.com/withastro/starlight`, not
       `DennisSmolek/cistern`
 - [x] **R-11** [CODE] Replace the unmodified Starlight starter
