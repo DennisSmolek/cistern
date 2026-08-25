@@ -320,7 +320,7 @@ verification. Versions verified against npm 2026-08-25.
       (`@changesets/cli` `^2.27.9` → `^3.0.1`) — needs Node ≥22.11, gated on
       Phase 0. Verify `changeset version` / `changeset publish` still behave
       and `.changeset/config.json` is valid
-- [ ] **R-09** [BLOCKED by D-07..D-12] [CODE] Re-enable Dependabot with a
+- [x] **R-09** [BLOCKED by D-07..D-12] [CODE] Re-enable Dependabot with a
       proper `dependabot.yml` (weekly, pnpm-aware) — its 100% failure streak
       should resolve once the workspace installs cleanly
 

@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    versioning-strategy: increase
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Pinned to an exact alpha (10.0.0-alpha.4) to match the peer ranges of
+      # three/@react-three/drei during the WebGPU/TSL migration. Any bump —
+      # patch, minor, or major — needs a manual review, not an automated PR.
+      - dependency-name: "@react-three/fiber"
+      # three has no 1.0 release, so breaking changes land as "minor" bumps
+      # (0.185 -> 0.186) in semver terms. TSL/WebGPU churn across those
+      # bumps needs manual migration, so leave major/minor to humans and
+      # only let patch releases through automatically.
+      - dependency-name: "three"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+      - dependency-name: "@types/three"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
