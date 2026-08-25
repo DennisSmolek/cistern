@@ -333,20 +333,20 @@ preview`, starter build.
 
 ## Phase 6 — Docs/site basics (content-light; redesign deferred)
 
-- [ ] **R-04** [CODE] Rewrite `README.md` for the real workspace (remove all
+- [x] **R-04** [CODE] Rewrite `README.md` for the real workspace (remove all
       VitePress-era content, ~60% of the file)
-- [ ] **R-06** [CODE] Fix live 404s: `index.mdx` hero actions → real slugs.
+- [x] **R-06** [CODE] Fix live 404s: `index.mdx` hero actions → real slugs.
       `/docs/` landing (`src/content/docs/index.mdx`) is still Starlight
       boilerplate ("Congrats on setting up a new Starlight project!", Houston
       image, template cards) — replace with real Cistern content
-- [ ] **R-10** [CODE] Minimal boilerplate purge: one real "Getting Started"
+- [x] **R-10** [CODE] Minimal boilerplate purge: one real "Getting Started"
       guide (install `@cistern/core`/`@cistern/r3f@0.2.0`, minimal
       `<Cistern>` snippet); delete or stub-honestly the template
       examples/reference pages
 - [ ] **R-05** [CODE] Fix the Starlight `social` link in `astro.config.mjs` —
       it points at `github.com/withastro/starlight`, not
       `DennisSmolek/cistern`
-- [ ] **R-11** [CODE] Replace the unmodified Starlight starter
+- [x] **R-11** [CODE] Replace the unmodified Starlight starter
       `apps/docs-astro/README.md`
 - [ ] **D-20** [CODE] Confirm the Cloudflare Workers docs deploy succeeds on
       the new toolchain

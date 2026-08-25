@@ -1,0 +1,44 @@
+---
+title: Cistern
+description: A geometry toolkit for galleries in the round — WebGPU/TSL-first, built on three.js.
+template: splash
+hero:
+  tagline: Profile-revolution geometry, a TSL/WebGPU material, and cistern-aware camera controls for round gallery spaces — built on three.js and React Three Fiber.
+  actions:
+    - text: Getting Started
+      link: /guides/getting-started/
+      icon: right-arrow
+    - text: Live WebGPU Example
+      link: /examples/webgpu-demo/
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## What is Cistern?
+
+Cistern is a small toolkit for building "galleries in the round" — cistern-shaped exhibition
+spaces — with three.js. `@cistern/core` generates profile-revolution `BufferGeometry` with
+sectional attributes and a TSL/WebGPU material; `@cistern/camera` extends `camera-controls` with
+gallery-aware collision and boundaries; `@cistern/r3f` wraps it all in React Three Fiber
+components.
+
+<CardGrid stagger>
+  <Card title="Getting Started" icon="rocket">
+    Install the packages and render your first `<Cistern>` in a few lines.
+    [Read the guide](/guides/getting-started/).
+  </Card>
+  <Card title="Live Example" icon="star">
+    See a `<Cistern>` mesh rendered live, via WebGPU, right inside this docs site.
+    [View the example](/examples/webgpu-demo/).
+  </Card>
+  <Card title="API Overview" icon="document">
+    A quick tour of what each package exports.
+    [Read the reference](/reference/overview/).
+  </Card>
+  <Card title="Source & Issues" icon="github">
+    Cistern is MIT licensed and open source.
+    [View on GitHub](https://github.com/DennisSmolek/cistern).
+  </Card>
+</CardGrid>

@@ -1,49 +1,28 @@
-# Starlight Starter Kit: Basics
+# Cistern Docs (`apps/docs-astro`)
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+The [cistern.studio](https://cistern.studio) site: an Astro + Starlight docs site whose `/` route
+is a full-viewport WebGPU React Three Fiber demo scene, with narrative docs and API reference under
+`/docs/`, `/guides/`, `/examples/`, and `/reference/`.
 
-```
-pnpm create astro@latest -- --template starlight
-```
+## Commands (run from this directory, or via `pnpm --filter apps-docs-astro <script>` from the repo root)
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```bash
+pnpm dev        # local dev server at localhost:4321
+pnpm build       # build the static site to ./dist
+pnpm preview      # preview the production build locally
+pnpm astro check   # typecheck Astro/MDX content and components
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+From the repo root you can also use `pnpm dev:docs` to start this app.
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+## Deployment
 
-Static assets, like favicons, can be placed in the `public/` directory.
+Deploys to **Cloudflare Workers** (static assets) via Wrangler, wired up in
+[`.github/workflows/deploy-docs.yml`](../../.github/workflows/deploy-docs.yml) — that workflow is
+path-filtered to only run when files under `apps/docs-astro/**` (or the workflow file itself)
+change, and it deploys using this app's `wrangler.toml`. Binding the custom domain
+(`cistern.studio`) is done once in the Cloudflare dashboard, not in code.
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
+Full setup, secrets, and manual-deploy instructions live in
+[`DEPLOYMENT.md`](./DEPLOYMENT.md) — read that rather than this file for anything deployment
+related.
