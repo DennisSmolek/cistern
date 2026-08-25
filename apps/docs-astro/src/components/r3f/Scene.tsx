@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Backdrop, Sphere } from '@react-three/drei';
 import type { Mesh, Group } from 'three/webgpu';
-import { Vector3, Vector2, MathUtils } from 'three/webgpu';
+import { Vector3, Vector2 } from 'three/webgpu';
 import { Cistern } from '@cistern/r3f';
 import type { CisternConfig } from '@cistern/core';
 import { ref, useSnapshot } from 'valtio';
 import { controlState } from './control/controlState';
+import { sceneRefs } from '../home/homeState';
 import { ControlScene } from './control/ControlScene';
 import { Suzi } from './Suzi';
 import { Lights } from './Lights';
@@ -48,6 +49,7 @@ export default function Scene() {
 
   const handleConfigChange = (config: CisternConfig) => {
     if (!cisternRef.current) return;
+    sceneRefs.cistern = cisternRef.current;
     controlState.activeConfig = config;
     const newHeight = config.pedestal?.height ?? 0;
     if (newHeight !== pedestalHeight) {
