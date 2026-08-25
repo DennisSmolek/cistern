@@ -293,7 +293,7 @@ verification. Versions verified against npm 2026-08-25.
 
 ### 5b. Majors — each its own commit + build verification
 
-- [ ] **D-07** [BLOCKED by Phase 0] [CODE] **Vite 7 → 8** (`^7.1.7` → `^8.2.2`)
+- [x] **D-07** [BLOCKED by Phase 0] [CODE] **Vite 7 → 8** (`^7.1.7` → `^8.2.2`)
       in root + `apps/starter`, together with `@vitejs/plugin-react` `^5.0.3`
       → `^6.1.0`. ⚠️ plugin-react@6 adds peers: `oxc-transform-react`,
       `@rolldown/plugin-babel`, `babel-plugin-react-compiler` — confirm
