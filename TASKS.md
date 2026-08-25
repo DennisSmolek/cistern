@@ -298,14 +298,14 @@ verification. Versions verified against npm 2026-08-25.
       → `^6.1.0`. ⚠️ plugin-react@6 adds peers: `oxc-transform-react`,
       `@rolldown/plugin-babel`, `babel-plugin-react-compiler` — confirm
       whether pnpm auto-installs or they need adding
-- [ ] **D-08** [BLOCKED by D-07] [CODE] **Astro 5 → 7** (`^5.6.1` → `^7.2.6`) —
+- [x] **D-08** [BLOCKED by D-07] [CODE] **Astro 5 → 7** (`^5.6.1` → `^7.2.6`) —
       two majors, read both migration guides. Bump **in the same commit** as
       `@astrojs/starlight` `^0.36.0` → `^0.41.8` and `@astrojs/react` `^4.3.1`
       → `^6.0.4`
-- [ ] **D-09** [BLOCKED by D-08] [CODE] Verify `astro.config.mjs` still valid —
+- [x] **D-09** [BLOCKED by D-08] [CODE] Verify `astro.config.mjs` still valid —
       content collections, `content.config.ts`, and the Starlight
       `sidebar`/`social` config all changed shape across 5→7
-- [ ] **D-13** [BLOCKED by D-08] [CODE] `sharp` `^0.34.2` → `^0.35.3` in
+- [x] **D-13** [BLOCKED by D-08] [CODE] `sharp` `^0.34.2` → `^0.35.3` in
       docs-astro (Astro image pipeline; check the Cloudflare Workers build
       still resolves the right binary)
 - [ ] **D-10** [CODE] **ESLint 9 → 10** (`eslint` `^9.36.0` → `^10.9.1`,

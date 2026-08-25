@@ -18,3 +18,6 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/utils@8.68.0'
   - '@typescript-eslint/visitor-keys@8.68.0'
   - typescript-eslint@8.68.0
+  - '@astrojs/markdown-satteri@0.3.8'
+  - '@astrojs/starlight@0.41.8'
+  - astro@7.2.6

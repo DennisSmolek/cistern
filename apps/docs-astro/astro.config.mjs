@@ -9,7 +9,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Cistern: docs',
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/DennisSmolek/cistern' }],
       sidebar: [
         {
           label: 'Guides',
@@ -18,10 +18,10 @@ export default defineConfig({
             { label: 'Example Guide', slug: 'guides/example' },
           ],
         },
-        { label: 'Examples', autogenerate: { directory: 'examples' } },
+        { label: 'Examples', items: [{ autogenerate: { directory: 'examples' } }] },
         {
           label: 'Reference',
-          autogenerate: { directory: 'reference' },
+          items: [{ autogenerate: { directory: 'reference' } }],
         },
       ],
     }),

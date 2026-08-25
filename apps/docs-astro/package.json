@@ -12,8 +12,8 @@
         "deploy": "astro build && npx wrangler@latest deploy --config wrangler.toml"
     },
     "dependencies": {
-        "@astrojs/react": "^4.3.1",
-        "@astrojs/starlight": "^0.36.0",
+        "@astrojs/react": "^6.0.4",
+        "@astrojs/starlight": "^0.41.8",
         "@cistern/camera": "workspace:*",
         "@cistern/core": "workspace:*",
         "@cistern/r3f": "workspace:*",
@@ -21,12 +21,12 @@
         "@react-three/fiber": "10.0.0-alpha.4",
         "@types/react": "^19.2.18",
         "@types/react-dom": "^19.2.5",
-        "astro": "^5.6.1",
+        "astro": "^7.2.6",
         "camera-controls": "^3.1.2",
         "leva": "^0.10.1",
         "react": "^19.2.8",
         "react-dom": "^19.2.8",
-        "sharp": "^0.34.2",
+        "sharp": "^0.35.3",
         "three": "^0.185.0",
         "valtio": "^2.3.2"
     },
