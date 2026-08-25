@@ -8,7 +8,7 @@
         "outDir": "dist-tsc",
         "rootDir": "src",
         "paths": {},
-        "types": ["@cistern/types", "@types/three"]
+        "types": ["@types/three"]
     },
     "references": [{ "path": "../core" }, { "path": "../camera" }],
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]

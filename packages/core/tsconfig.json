@@ -7,7 +7,7 @@
         "emitDeclarationOnly": true,
         "outDir": "dist-tsc",
         "rootDir": "src",
-        "types": ["@cistern/types", "@types/three"]
+        "types": ["@types/three"]
     },
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
     "exclude": ["src/**/__tests__/**", "**/*.test.ts", "**/*.spec.ts"]

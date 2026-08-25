@@ -1,3 +1,4 @@
+import type { Points, SinglePoint } from "../../types";
 
 export function createPointTracker(pointsArray: Points) {
     return {

@@ -211,26 +211,26 @@ confirm `{ phase: 'render' }` actually replaces the default loop the way
 
 ### 4a. Types: ambient globals → exported modules
 
-- [ ] **P-01** [CODE] Create `packages/core/src/types.ts`: move everything from
+- [x] **P-01** [CODE] Create `packages/core/src/types.ts`: move everything from
       `packages/types/core.d.ts` verbatim with `export` added (`SinglePoint`,
       `Points`, `TrimConfig`, `BaseConfig`, `WallConfig`, `CornerConfig`,
       `PedestalConfig`, `CisternConfig`)
-- [ ] **P-02** [BLOCKED by P-01] [CODE] `packages/core/src/index.ts`: replace
+- [x] **P-02** [BLOCKED by P-01] [CODE] `packages/core/src/index.ts`: replace
       the `export type X = globalThis.X` lines with `export * from './types'`;
       drop the `@cistern/types` reference
-- [ ] **P-03** [BLOCKED by P-02] [CODE] Add explicit imports in all former
+- [x] **P-03** [BLOCKED by P-02] [CODE] Add explicit imports in all former
       consumers of the globals — core (`CisternGeometry.ts`, `config.ts`,
       `pointGeneration.ts`, `utils/*`, `defaults.ts`, `CisternMaterial.ts`),
       camera (`cistern-controls.ts` imports from `@cistern/core`; move
       `CollisionHit` from `packages/types/camera.d.ts` into an exported camera
       type), r3f (`Cistern.tsx`, `CisternMesh.tsx`, `CisternCamera.tsx`),
       docs-astro (`Scene.tsx`, `control/controlState.ts`)
-- [ ] **P-04** [BLOCKED by P-03] [CODE] Shrink `packages/types` to genuinely
+- [x] **P-04** [BLOCKED by P-03] [CODE] Shrink `packages/types` to genuinely
       ambient content only: keep `r3f.d.ts` (ThreeElements augmentations),
       `vendor.d.ts`, surviving `three-tsl-*` patches; delete `core.d.ts` /
       `camera.d.ts`; prune `"types": ["@cistern/types"]` from tsconfigs that no
       longer need it. **Published `dist/index.d.ts` must reference no globals.**
-- [ ] **P-05** [CODE] Publish-blocker fix: gate `CisternMaterial`'s forced
+- [x] **P-05** [CODE] Publish-blocker fix: gate `CisternMaterial`'s forced
       `debugColor()` behind an opt-in `debug` option so 0.2.0 doesn't ship
       random section colors (small change only — full slot-system work stays
       in the dedicated materials phase, see Deferred)

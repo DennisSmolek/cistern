@@ -3,6 +3,7 @@
 
 import CameraControls from "camera-controls";
 import { Camera, PerspectiveCamera, Vector3, Matrix4, Raycaster, CylinderGeometry, MeshBasicMaterial, Mesh, DoubleSide, Box3 } from "three/webgpu";
+import type { CisternConfig } from "@cistern/core";
 //import { CisternMesh } from "@cistern/core";
 
 const _ORIGIN = new Vector3(0, 0, 0);

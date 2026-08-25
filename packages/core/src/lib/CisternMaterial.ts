@@ -108,12 +108,15 @@ export class CisternMaterial extends MeshStandardNodeMaterial {
     }
 
 
-    constructor() {
+    constructor(options?: { debug?: boolean }) {
         super();
         // save the original color node
         if (this.colorNode) this.originalColorNode = this.colorNode;
         this.side = FrontSide;
-        this.debugColor();
+        // debug defaults to true FOR NOW so the demo's random section colors
+        // keep showing; flipping the default to false is a deliberate
+        // decision to be made at publish time.
+        if (options?.debug !== false) this.debugColor();
         this.rebuild();
     }
 

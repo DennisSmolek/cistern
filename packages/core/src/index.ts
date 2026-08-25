@@ -1,12 +1,6 @@
-// Re-export global types so consumers can import from '@cistern/core'
-export type BaseConfig = globalThis.BaseConfig
-export type CisternConfig = globalThis.CisternConfig
-export type Points = globalThis.Points
-export type SinglePoint = globalThis.SinglePoint
-export type TrimConfig = globalThis.TrimConfig
-export type WallConfig = globalThis.WallConfig
-export type CornerConfig = globalThis.CornerConfig
-export type PedestalConfig = globalThis.PedestalConfig
+// Domain types live in ./types and are re-exported so consumers can
+// `import type { CisternConfig } from '@cistern/core'`
+export * from './types'
 
 export { CisternGeometry } from './lib/CisternGeometry'
 //export { CisternMesh } from './lib/CisternMesh'

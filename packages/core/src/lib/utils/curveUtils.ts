@@ -1,4 +1,5 @@
 import { CubicBezierCurve, Vector2, Vector3 } from "three/webgpu";
+import type { Points, SinglePoint } from "../../types";
 
 function length(v: number[]): number {
     return Math.sqrt(v[0] * v[0] + v[1] * v[1]);

@@ -1,5 +1,6 @@
 import { createPointTracker } from ".";
 import { makeBevelCurve } from "./curveUtils";
+import type { PedestalConfig, Points, SinglePoint, TrimConfig } from "../../types";
 
 export function makePedestal(config: PedestalConfig): Points {
     const points: Points = [];

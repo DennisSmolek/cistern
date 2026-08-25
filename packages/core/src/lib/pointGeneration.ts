@@ -1,6 +1,7 @@
 import { makePedestal, makeSoffit, makeTrim } from "./utils/sectionUtils";
 import { makeCornerCurveFromPoints } from "./utils/curveUtils";
 import { createPointTracker, notZero } from "./utils";
+import type { CisternConfig, Points, SinglePoint } from "../types";
 
 /**
  * Applies a local sequence of points relative to a current position and appends

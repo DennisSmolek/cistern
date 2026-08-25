@@ -1,3 +1,4 @@
+import type { BaseConfig, TrimConfig } from '../types';
 
 export const defaultTrimConfig: TrimConfig = {
     size: 0.25,

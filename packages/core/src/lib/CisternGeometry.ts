@@ -2,7 +2,7 @@ import { Float32BufferAttribute, BufferGeometry, Vector2, Vector3, MathUtils } f
 import { generateRawPoints, } from "./pointGeneration";
 import { mergeConfigs, getConfigFromBase } from "./config";
 import { defaultBaseConfig } from "./defaults";
-import { CisternConfig } from "..";
+import type { CisternConfig } from "../types";
 import { circleToUV } from "./utils/threeUtils";
 
 export class CisternGeometry extends BufferGeometry {

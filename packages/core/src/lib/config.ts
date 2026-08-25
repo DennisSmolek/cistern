@@ -1,5 +1,6 @@
 import { defaultTrimConfig } from './defaults';
 import { deepMerge } from './utils';
+import type { BaseConfig, CisternConfig, Points } from '../types';
 
 export const defaultBaseConfig: BaseConfig = {
     radius: 20,

@@ -5,6 +5,7 @@ import { ThreeElements } from '@react-three/fiber';
 import { CisternMesh } from './CisternMesh';
 import { CisternCamera } from './CisternCamera';
 import type { CisternCameraControls } from '@cistern/camera';
+import type { CisternConfig } from '@cistern/core';
 
 export type CisternProps = Omit<ThreeElements['mesh'], 'ref'> & {
   ref?: React.RefObject<Mesh | null>;

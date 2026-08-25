@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defaultBaseConfig, getConfig, getConfigFromBase, mergeConfigs } from '../config';
+import type { Points } from '../../types';
 
 describe('getConfig', () => {
     it('returns the default shape when called with no arguments', () => {

@@ -1,8 +1,8 @@
-type SinglePoint = [number, number, number?]
+export type SinglePoint = [number, number, number?]
 
-type Points = SinglePoint[]
+export type Points = SinglePoint[]
 
-interface TrimConfig {
+export interface TrimConfig {
     size?: number
     depth?: number
     bevelOuter?: boolean
@@ -13,7 +13,7 @@ interface TrimConfig {
     startFrom?: 'top' | 'bottom'
 }
 
-interface BaseConfig {
+export interface BaseConfig {
     radius: number
     height: number
     topHeight?: number
@@ -26,13 +26,13 @@ interface BaseConfig {
     skylightRadius?: number
 }
 
-interface WallConfig {
+export interface WallConfig {
     ceilingTrim?: TrimConfig
     floorTrim?: TrimConfig
     railTrim?: TrimConfig
 }
 
-interface CornerConfig {
+export interface CornerConfig {
     startDistance: number
     endDistance: number
     firstControlDistance: number
@@ -40,7 +40,7 @@ interface CornerConfig {
     points?: Points
 }
 
-interface PedestalConfig {
+export interface PedestalConfig {
     height?: number
     outerHeight?: number
     radius?: number
@@ -54,7 +54,7 @@ interface PedestalConfig {
     insetOffset?: number
 }
 
-interface CisternConfig {
+export interface CisternConfig {
     root?: {
         radius?: number
         topRadius?: number

@@ -7,7 +7,7 @@
         "emitDeclarationOnly": true,
         "outDir": "dist-tsc",
         "rootDir": "src",
-        "types": ["@cistern/types", "@types/three"],
+        "types": ["@types/three"],
         "paths": {
             "@cistern/core": ["packages/core/dist/index.d.ts"]
         }

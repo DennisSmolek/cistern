@@ -4,6 +4,7 @@ import { Backdrop, Sphere } from '@react-three/drei';
 import type { Mesh, Group } from 'three/webgpu';
 import { Vector3, Vector2, MathUtils } from 'three/webgpu';
 import { Cistern } from '@cistern/r3f';
+import type { CisternConfig } from '@cistern/core';
 import { ref, useSnapshot } from 'valtio';
 import { controlState } from './control/controlState';
 import { ControlScene } from './control/ControlScene';

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getConfig } from '../config';
 import { generateRawPoints } from '../pointGeneration';
 import { CisternGeometry } from '../CisternGeometry';
+import type { Points, SinglePoint } from '../../types';
 
 // The 8 section IDs generateRawPoints is documented to emit, pedestal -> skylight.
 // See the block comment above generateRawPoints in pointGeneration.ts.
