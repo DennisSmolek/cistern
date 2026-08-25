@@ -1,0 +1,10 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "composite": false,
+        "noEmit": true,
+        "rootDir": "src",
+        "types": ["@cistern/types", "@types/three"]
+    },
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]
+}

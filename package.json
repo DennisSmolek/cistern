@@ -14,6 +14,7 @@
         "dev:docs": "pnpm --filter apps-docs-astro dev",
         "dev:starter": "pnpm --filter @cistern/starter dev",
         "typecheck": "tsc -b",
+        "test": "pnpm -r --if-present test",
         "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
         "format": "prettier -w .",
         "changeset": "changeset",

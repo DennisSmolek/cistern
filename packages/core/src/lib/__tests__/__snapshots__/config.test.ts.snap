@@ -1,0 +1,85 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`getConfig > returns the default shape when called with no arguments 1`] = `
+{
+  "bottomCorner": {
+    "endDistance": 1,
+    "firstControlDistance": 0,
+    "lastControlDistance": 0,
+    "points": [],
+    "startDistance": 1,
+  },
+  "pedestal": {
+    "dropAngle": 0,
+    "height": 0.25,
+    "inset": 0.125,
+    "insetHeight": 0.125,
+    "outerHeight": 0.25,
+    "points": [],
+    "radius": 5,
+  },
+  "root": {
+    "bottomHeight": 0,
+    "bottomRadius": 20,
+    "height": 10,
+    "radius": 20,
+    "topHeight": 10,
+    "topRadius": 20,
+  },
+  "skylight": {
+    "depth": 0.25,
+    "points": [],
+    "radius": 5,
+    "topLip": 0.125,
+    "topRadius": 5,
+  },
+  "soffit": {
+    "dropAngle": 0,
+    "height": 0,
+    "inset": 0.125,
+    "insetHeight": 0.125,
+    "points": [],
+    "radius": 0.185,
+  },
+  "topCorner": {
+    "endDistance": 1,
+    "firstControlDistance": 0,
+    "lastControlDistance": 0,
+    "points": [],
+    "startDistance": 1,
+  },
+  "wall": {
+    "ceilingTrim": {
+      "bevelBottomInner": true,
+      "bevelOuter": true,
+      "bevelSize": 0.0125,
+      "bevelTopInner": true,
+      "depth": -0.125,
+      "offset": 0,
+      "size": 0.25,
+      "startFrom": "bottom",
+    },
+    "floorTrim": {
+      "bevelBottomInner": true,
+      "bevelOuter": true,
+      "bevelSize": 0.0125,
+      "bevelTopInner": true,
+      "depth": -0.125,
+      "offset": 0,
+      "size": 0.25,
+      "startFrom": "bottom",
+    },
+    "points": [],
+    "railTrim": {
+      "bevelBottomInner": true,
+      "bevelOuter": true,
+      "bevelSize": 0.0125,
+      "bevelTopInner": true,
+      "depth": -0.125,
+      "offset": 0,
+      "size": 0.25,
+      "startFrom": "bottom",
+    },
+  },
+}
+`;

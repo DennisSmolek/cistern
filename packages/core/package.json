@@ -21,7 +21,8 @@
     },
     "scripts": {
         "build": "tsup src/index.ts --dts --format esm,cjs --sourcemap --clean --tsconfig tsconfig.tsup.json",
-        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch --tsconfig tsconfig.tsup.json"
+        "dev": "tsup src/index.ts --dts --format esm,cjs --sourcemap --watch --tsconfig tsconfig.tsup.json",
+        "test": "vitest run"
     },
     "peerDependencies": {
         "three": "^0.180.0"
@@ -29,6 +30,7 @@
     "devDependencies": {
         "@cistern/types": "workspace:*",
         "tsup": "^8.5.0",
-        "typescript": "^5.9.2"
+        "typescript": "^5.9.2",
+        "vitest": "^4.1.11"
     }
 }

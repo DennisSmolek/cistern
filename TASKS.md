@@ -100,16 +100,16 @@ fix them, don't loosen tsconfig.
 
 ## Phase 1 — Baseline tests (before any dependency bump)
 
-- [ ] **TE-01** [CODE] Add vitest to `packages/core` (`"test": "vitest run"`);
+- [x] **TE-01** [CODE] Add vitest to `packages/core` (`"test": "vitest run"`);
       root `"test": "pnpm -r --if-present test"`
-- [ ] **TE-02** [CODE] `packages/core/src/lib/__tests__/config.test.ts` —
+- [x] **TE-02** [CODE] `packages/core/src/lib/__tests__/config.test.ts` —
       `getConfig`/merge behavior shapes
-- [ ] **TE-03** [CODE] `packages/core/src/lib/__tests__/geometry.test.ts` —
+- [x] **TE-03** [CODE] `packages/core/src/lib/__tests__/geometry.test.ts` —
       `generateRawPoints` point counts/section IDs for the default config;
       `new CisternGeometry(config)` position-attribute count > 0, finite
       bounding sphere. **Snapshot the point output** — this locks in the
       "blur glitch" duplicate-point hacks before three 0.185 touches anything
-- [ ] **TE-04** [CODE] Add a test step to `.github/workflows/release.yml`
+- [x] **TE-04** [CODE] Add a test step to `.github/workflows/release.yml`
 
 **Verify:** `pnpm test` green on the current (three 0.180) baseline.
 
