@@ -51,7 +51,7 @@ export const RandomizedLight: ForwardRefComponent<RandomizedLightProps, Accumula
         size = 5,
         near = 0.5,
         far = 500,
-        frames = 1,
+        frames: _frames = 1,
         position = [0, 0, 0],
         radius = 1,
         amount = 8,

@@ -2,8 +2,8 @@ import { forwardRef, useEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { Mesh, MeshStandardMaterial } from 'three/webgpu';
 import type { ThreeElements } from '@react-three/fiber';
-import { controlState } from './control/controlState';
-import { ref } from 'valtio';
+
+
 
 export const Suzi = forwardRef<Mesh, ThreeElements['mesh']>((props, meshRef) => {
   const { nodes, materials } = useGLTF('./models/suzimatholder.glb');

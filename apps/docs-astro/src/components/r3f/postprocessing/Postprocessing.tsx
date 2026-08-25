@@ -6,8 +6,6 @@ import React, {
     useState,
     useCallback,
     useRef,
-    useEffect,
-    useLayoutEffect,
 } from 'react';
 import { useThree } from '@react-three/fiber';
 import {

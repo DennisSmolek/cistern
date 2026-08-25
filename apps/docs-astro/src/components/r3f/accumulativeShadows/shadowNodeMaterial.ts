@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu';
-import { varying, vec2, texture, uniform, sub, max, vec4, Fn, uv } from 'three/tsl';
+import { texture, uniform, sub, max, vec4, uv } from 'three/tsl';
 
 export class ShadowNodeMaterial extends THREE.MeshPhongNodeMaterial {
 

@@ -1,7 +1,7 @@
 import { useSnapshot } from 'valtio';
 import { controlState } from './controlState';
 import { useEffect, useMemo } from 'react';
-import { useControls, button, folder } from 'leva';
+import { useControls, button } from 'leva';
 import { useThree } from '@react-three/fiber';
 
 export const ControlScene = () => {
