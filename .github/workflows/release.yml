@@ -37,7 +37,7 @@ jobs:
               run: pnpm test
 
             - name: Version or Publish
-              uses: changesets/action@v1
+              uses: changesets/action@v2
               with:
                   version: pnpm release:version
                   publish: pnpm release:publish
