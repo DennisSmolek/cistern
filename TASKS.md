@@ -313,7 +313,7 @@ verification. Versions verified against npm 2026-08-25.
       `^7.1.1` (two majors — the flat-config `recommended` export was
       restructured), `eslint-plugin-react-refresh` `^0.4.20` → `^0.5.4`,
       `eslint-plugin-tsdoc` `^0.4.0` → `^0.5.2`. Rework `eslint.config.js` as needed
-- [ ] **D-11** [CODE] **TypeScript 5.9.2 → 6.0.3** across root + all 4
+- [x] **D-11** [CODE] **TypeScript 5.9.2 → 6.0.3** across root + all 4
       packages + starter. ⛔ Do **not** go to 7.0.2 — see constraint 2 above.
       Re-run `pnpm build` (tsup `--dts`) after
 - [ ] **D-12** [BLOCKED by Phase 0 (Node 22)] [CODE] **Changesets 2 → 3**
