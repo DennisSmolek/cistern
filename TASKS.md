@@ -308,7 +308,7 @@ verification. Versions verified against npm 2026-08-25.
 - [x] **D-13** [BLOCKED by D-08] [CODE] `sharp` `^0.34.2` → `^0.35.3` in
       docs-astro (Astro image pipeline; check the Cloudflare Workers build
       still resolves the right binary)
-- [ ] **D-10** [CODE] **ESLint 9 → 10** (`eslint` `^9.36.0` → `^10.9.1`,
+- [x] **D-10** [CODE] **ESLint 9 → 10** (`eslint` `^9.36.0` → `^10.9.1`,
       `@eslint/js` → `^10.0.1`) plus `eslint-plugin-react-hooks` `^5.2.0` →
       `^7.1.1` (two majors — the flat-config `recommended` export was
       restructured), `eslint-plugin-react-refresh` `^0.4.20` → `^0.5.4`,

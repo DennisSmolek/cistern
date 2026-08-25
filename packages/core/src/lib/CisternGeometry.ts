@@ -85,8 +85,8 @@ export class CisternGeometry extends BufferGeometry {
         const normal = new Vector3();
         const curNormal = new Vector3();
         const prevNormal = new Vector3();
-        let dx = 0;
-        let dy = 0;
+        let dx: number;
+        let dy: number;
 
         //* Initial Normal Generation ====--
 
