@@ -271,17 +271,17 @@ verification. Versions verified against npm 2026-08-25.
 
 ### 5a. Safe bumps (one commit)
 
-- [ ] **D-01** [CODE] react + react-dom `^19.1.1` → `^19.2.8` (root types,
+- [x] **D-01** [CODE] react + react-dom `^19.1.1` → `^19.2.8` (root types,
       docs-astro, starter). **Capped:** fiber v10 requires `react >=19.0
       <19.3` — do not bump higher until fiber's peer range moves
-- [ ] **D-02** [CODE] `@types/react` `^19.1.13` → `^19.2.18`, `@types/react-dom`
+- [x] **D-02** [CODE] `@types/react` `^19.1.13` → `^19.2.18`, `@types/react-dom`
       `^19.1.9` → `^19.2.5`
-- [ ] **D-04** [CODE] `typescript-eslint` + `@typescript-eslint/{parser,eslint-plugin}`
+- [x] **D-04** [CODE] `typescript-eslint` + `@typescript-eslint/{parser,eslint-plugin}`
       `^8.44.0` → `^8.68.0`
-- [ ] **D-05** [CODE] `prettier` `^3.6.2` → `^3.9.6`, `tsup` `^8.5.0` →
+- [x] **D-05** [CODE] `prettier` `^3.6.2` → `^3.9.6`, `tsup` `^8.5.0` →
       `^8.5.1` ~~, `typedoc` `^0.28.13` → `^0.28.20`~~ *(typedoc removed in
       Phase 0, R-03 — skip until re-added)*
-- [ ] **D-06** [CODE] `camera-controls` `^3.1.0` → `^3.1.2`, `leva` `^0.10.0` →
+- [x] **D-06** [CODE] `camera-controls` `^3.1.0` → `^3.1.2`, `leva` `^0.10.0` →
       `^0.10.1`, `valtio` `^2.1.7` → `^2.3.2` ~~, `@wuhhh/view-webgpu`
       `^0.1.0` → `^0.1.1`~~ — **`@wuhhh/view-webgpu` is superseded: removed
       entirely in Phase 3 (F-01), not bumped. It peer-pins fiber `^9.3` and

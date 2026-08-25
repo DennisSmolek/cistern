@@ -48,8 +48,8 @@
     },
     "devDependencies": {
         "@cistern/types": "workspace:*",
-        "camera-controls": "^3.1.0",
-        "tsup": "^8.5.0",
+        "camera-controls": "^3.1.2",
+        "tsup": "^8.5.1",
         "typescript": "^5.9.2"
     }
 }

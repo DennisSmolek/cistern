@@ -55,7 +55,7 @@
         "@cistern/types": "workspace:*",
         "@react-three/drei": "^10.7.8",
         "@react-three/fiber": "10.0.0-alpha.4",
-        "tsup": "^8.5.0",
+        "tsup": "^8.5.1",
         "typescript": "^5.9.2"
     }
 }
