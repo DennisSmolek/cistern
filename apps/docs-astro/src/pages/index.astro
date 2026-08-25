@@ -1,13 +1,31 @@
 ---
-import Fiber from "../components/r3f/Fiber";
+import Home from '../components/home/Home';
+// Version chip reads the real @cistern/core version, inlined at build time.
+import corePkg from '../../../../packages/core/package.json';
 ---
-<style is:global>
-  html, body { margin: 0; padding: 0; height: 100%; }
-  #root { height: 100%; }
-</style>
 
-<div style="width:100vw;height:100vh;">
-  <Fiber client:only="react" />
-</div>
-
-
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>cistern.studio</title>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <meta
+            name="description"
+            content="Parametric round-gallery geometry for three.js and React Three Fiber."
+        />
+        <style is:global>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                overflow: hidden;
+                background: #0b0a09;
+            }
+        </style>
+    </head>
+    <body>
+        <Home client:only="react" version={corePkg.version} />
+    </body>
+</html>
