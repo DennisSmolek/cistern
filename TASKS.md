@@ -257,8 +257,11 @@ confirm `{ phase: 'render' }` actually replaces the default loop the way
       9-or-10-alpha; exported types; fixed metadata). *(Subsumes D-16.)*
       Confirm `NPM_TOKEN`/`GH_PAT` secrets are still valid; merge Version PR;
       CI publishes with provenance
-- [ ] **P-10** [BLOCKED by P-09] [CODE] After 0.2.0 is live: `npm deprecate`
-      all three 0.1.0s with "use >=0.2.0" messages
+- [x] **P-10** ~~`npm deprecate` all three 0.1.0s with "use >=0.2.0" messages~~
+      — skipped by decision 2026-08-26: no users yet, and 0.2.0 is `latest` so
+      fresh installs never see 0.1.0. (Note: 0.2.0 published 2026-08-26 via npm
+      **Trusted Publishing/OIDC** — the old NPM_TOKEN was a sunset classic token
+      and is no longer used.)
 
 ---
 
