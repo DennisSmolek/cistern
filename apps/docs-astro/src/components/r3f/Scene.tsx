@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Backdrop, Sphere } from '@react-three/drei';
 import type { Mesh, Group } from 'three/webgpu';
-import { Vector3, Vector2, MathUtils } from 'three/webgpu';
+import { Vector3, Vector2 } from 'three/webgpu';
 import { Cistern } from '@cistern/r3f';
 import type { CisternConfig } from '@cistern/core';
 import { ref, useSnapshot } from 'valtio';
 import { controlState } from './control/controlState';
+import { sceneRefs } from '../home/homeState';
+import { palette } from '../home/palette';
 import { ControlScene } from './control/ControlScene';
 import { Suzi } from './Suzi';
 import { Lights } from './Lights';
@@ -17,7 +19,7 @@ function AnimatedSphere() {
   const meshRef = useRef<Mesh>(null);
 
   const position: [number, number, number] = [0, 2, 0];
-  const color = '#4ecdc4';
+  const color = palette.complement;
   const floatSpeed = 2;
   const floatHeight = 1;
 
@@ -48,6 +50,7 @@ export default function Scene() {
 
   const handleConfigChange = (config: CisternConfig) => {
     if (!cisternRef.current) return;
+    sceneRefs.cistern = cisternRef.current;
     controlState.activeConfig = config;
     const newHeight = config.pedestal?.height ?? 0;
     if (newHeight !== pedestalHeight) {
@@ -81,7 +84,10 @@ export default function Scene() {
           config={finalConfig}
           onConfigChange={handleConfigChange}
           onPointsChange={handlePointsChange}
-        />
+        >
+          {/* Palette-tinted monochrome instead of the debug section colors */}
+          <meshStandardMaterial color={palette.primary} roughness={0.85} metalness={0} />
+        </Cistern>
         <group position-x={pedestalHeight}>
           <group rotation={suziRotation}>
             <Suzi position={[2, 1, 0]} scale={1.5} />
@@ -97,7 +103,7 @@ export default function Scene() {
         position={[0, -0.25, -150]}
         scale={[1800, 100, 100]}
       >
-        <meshStandardMaterial color="blue" />
+        <meshStandardMaterial color={palette.backdrop} />
       </Backdrop>
 
       <ControlScene />

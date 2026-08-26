@@ -9,6 +9,7 @@ extend({ CisternMaterial });
 import type { ThreeElements } from '@react-three/fiber';
 import { useRef, useMemo } from 'react';
 import type { Mesh } from 'three/webgpu';
+import { palette } from '../home/palette';
 
 //* ChangingCistern: Passes standard mesh props to Cistern
 export const ChangingCistern = ({
@@ -27,7 +28,7 @@ export const ChangingCistern = ({
   return (
     <group scale={scale} position={position} rotation={rotation} {...props} ref={ref}>
       <CisternMesh ref={meshRef} config={config}>
-        <meshStandardMaterial color="pink" />
+        <meshStandardMaterial color={palette.complementSoft} />
       </CisternMesh>
       <CisternMesh ref={wireFrameRef} config={config}>
         <meshStandardMaterial color="black" wireframe transparent opacity={0.5} />

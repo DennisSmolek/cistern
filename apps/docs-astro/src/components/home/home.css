@@ -1,0 +1,557 @@
+/*
+ * cistern.studio homepage shell — from the Claude Design handoff
+ * (design_handoff_cistern_homepage/README.md, screens 1a desktop / 1c mobile).
+ *
+ * The accent is ONE token. Swap the --accent line (and --accent-hi, its
+ * lightened hover) to re-skin the page; every alpha variant derives via
+ * color-mix. Candidates tried so far:
+ *   #4fd6a8 (design-file green, hover #7fe6c2)
+ *   #7f9fe8 (periwinkle, hover #a7bff2)
+ */
+.home {
+    /* -- tokens ---------------------------------------------------------- */
+    --bg-page: #0b0a09;
+    --bg-canvas: #141210;
+    --ink: #f2ede6;
+    --ink-72: rgba(242, 237, 230, 0.72);
+    --ink-70: rgba(242, 237, 230, 0.7);
+    --ink-55: rgba(242, 237, 230, 0.55);
+    --ink-42: rgba(242, 237, 230, 0.42);
+    --ink-38: rgba(242, 237, 230, 0.38);
+    --rule: rgba(242, 237, 230, 0.08);
+    --border: rgba(242, 237, 230, 0.2);
+    --border-hi: rgba(242, 237, 230, 0.45);
+    --accent: #5b7fd6; /* darker blue — swap freely */
+    --accent-hi: #86a4ea;
+    --accent-60: color-mix(in srgb, var(--accent) 60%, transparent);
+    --accent-45: color-mix(in srgb, var(--accent) 45%, transparent);
+    --accent-30: color-mix(in srgb, var(--accent) 30%, transparent);
+    --accent-22: color-mix(in srgb, var(--accent) 22%, transparent);
+    --accent-10: color-mix(in srgb, var(--accent) 10%, transparent);
+    --accent-08: color-mix(in srgb, var(--accent) 7%, transparent);
+    --font-sans: 'Archivo', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    position: fixed;
+    inset: 0;
+    background: var(--bg-page);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    overflow: hidden;
+}
+
+.home a,
+.home button {
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease;
+}
+.home :is(a, button):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* -- layers -------------------------------------------------------------- */
+.home-canvas {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-canvas);
+}
+.home-scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        100deg,
+        rgba(11, 10, 9, 0.94) 0%,
+        rgba(11, 10, 9, 0.7) 34%,
+        rgba(11, 10, 9, 0) 62%
+    );
+    transition: opacity 250ms ease;
+}
+
+/* -- header -------------------------------------------------------------- */
+.home-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 76px;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.home-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+.home-mark {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.home-mark::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border: 1.5px solid var(--accent-60);
+    border-radius: 50%;
+}
+.home-wordmark {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+}
+.home-wordmark span {
+    color: var(--ink-42);
+}
+.home-nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+}
+.home-nav a {
+    color: var(--ink-70);
+}
+.home-nav a:hover {
+    color: var(--ink);
+}
+.home-chip {
+    padding: 5px 10px;
+    border: 1px solid rgba(242, 237, 230, 0.16);
+    border-radius: 4px;
+    font-size: 11.5px;
+    color: var(--ink-55);
+}
+.home-chip span {
+    color: var(--accent);
+    margin-left: 6px;
+}
+.home-burger {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: 0;
+    padding: 8px;
+}
+.home-burger i {
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--ink-70);
+}
+.home-sheet {
+    display: none;
+}
+
+/* -- hero ---------------------------------------------------------------- */
+.home-hero {
+    position: absolute;
+    left: 40px;
+    top: 196px;
+    width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    transition: opacity 250ms ease;
+}
+.home-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.home-h1 {
+    margin: 0;
+    font-size: 78px;
+    line-height: 0.94;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+}
+.home-h1 span {
+    color: var(--ink-38);
+}
+.home-lead {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-72);
+    max-width: 480px;
+    text-wrap: pretty;
+}
+.home-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 6px;
+}
+.home-install {
+    display: flex;
+    width: fit-content;
+    border: 1px solid var(--accent-45);
+    border-radius: 5px;
+    overflow: hidden;
+    background: var(--accent-08);
+    font-family: var(--font-mono);
+    font-size: 15px;
+}
+.home-install code {
+    padding: 13px 18px;
+    white-space: nowrap;
+    color: var(--ink);
+    font-family: inherit;
+}
+.home-install code b {
+    color: var(--accent);
+    font-weight: 400;
+    margin-right: 9px;
+}
+.home-copy {
+    border: 0;
+    border-left: 1px solid var(--accent-30);
+    background: var(--accent-10);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 14px 15px;
+}
+.home-copy:hover {
+    background: var(--accent-22);
+}
+.home-buttons {
+    display: flex;
+    gap: 12px;
+}
+.home-buttons :is(a, button) {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border-radius: 5px;
+    font-size: 15px;
+    border: 0;
+    background: none;
+}
+.home-buttons .arrow {
+    font-family: var(--font-mono);
+    font-size: 13px;
+}
+.home-buttons .home-btn-primary {
+    background: var(--accent);
+    color: #0b0a09;
+    font-weight: 600;
+    padding: 13px 22px;
+}
+.home-buttons .home-btn-primary:hover {
+    background: var(--accent-hi);
+}
+.home-buttons .home-btn-secondary {
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-weight: 500;
+    padding: 13px 22px;
+}
+.home-buttons .home-btn-secondary:hover {
+    border-color: var(--border-hi);
+}
+.home-buttons .home-btn-tertiary {
+    color: var(--ink-55);
+    font-weight: 500;
+    padding: 13px 6px;
+}
+.home-buttons .home-btn-tertiary:hover {
+    color: var(--ink);
+}
+
+/* -- footer -------------------------------------------------------------- */
+.home-footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 56px;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--rule);
+    background: linear-gradient(rgba(11, 10, 9, 0), rgba(11, 10, 9, 0.7));
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-42);
+    transition: opacity 250ms ease;
+}
+.home-footer a {
+    color: var(--accent);
+}
+.home-footer a:hover {
+    color: var(--accent-hi);
+}
+
+/* -- leva + export ------------------------------------------------------- */
+.home-leva {
+    position: absolute;
+    top: 92px;
+    right: 32px;
+    width: 288px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    z-index: 20;
+}
+.home-leva > :not(.home-gear) {
+    width: 100%;
+}
+.home-gear {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: rgba(11, 10, 9, 0.7);
+    color: var(--ink-70);
+}
+.home-gear:hover,
+.home-gear[aria-expanded='true'] {
+    border-color: var(--border-hi);
+    color: var(--ink);
+}
+.home-export {
+    border: 1px solid var(--accent-45);
+    border-radius: 5px;
+    background: rgba(11, 10, 9, 0.85);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+}
+.home-export-label {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-55);
+}
+.home-export-buttons {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+.home-export button {
+    border: 1px solid var(--accent-45);
+    border-radius: 4px;
+    background: var(--accent-10);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 7px 12px;
+}
+.home-export button:hover {
+    background: var(--accent-22);
+}
+.home-export button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.home-export-error {
+    font-size: 11px;
+    color: #e07a6a;
+}
+
+/* -- edit mode ----------------------------------------------------------- */
+.home--edit .home-scrim,
+.home--edit .home-hero,
+.home--edit .home-footer {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+        opacity 250ms ease,
+        visibility 0s 250ms;
+}
+.home-exit {
+    position: absolute;
+    left: 40px;
+    bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: rgba(11, 10, 9, 0.8);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 11px 18px;
+    z-index: 20;
+}
+.home-exit:hover {
+    border-color: var(--border-hi);
+}
+
+/* -- responsive ---------------------------------------------------------- */
+.m-only {
+    display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+    .home-h1 {
+        font-size: 56px;
+    }
+    .home-hero {
+        width: 440px;
+    }
+}
+
+@media (max-width: 767px) {
+    .d-only {
+        display: none;
+    }
+    .m-only {
+        display: block;
+    }
+
+    .home {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .home-canvas {
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 46%;
+    }
+    .home-scrim {
+        height: 46%;
+        inset: 0 0 auto 0;
+        background: linear-gradient(to top, rgba(11, 10, 9, 0.95) 0%, rgba(11, 10, 9, 0) 45%);
+    }
+
+    .home-header {
+        height: 64px;
+        padding: 0 20px;
+    }
+    .home-mark {
+        width: 15px;
+        height: 15px;
+    }
+    .home-wordmark {
+        font-size: 14px;
+    }
+    .home-nav {
+        display: none;
+    }
+    .home-burger {
+        display: flex;
+    }
+    .home-sheet {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(11, 10, 9, 0.96);
+        border-bottom: 1px solid var(--rule);
+        padding: 8px 20px 16px;
+        gap: 4px;
+        font-family: var(--font-mono);
+        font-size: 14px;
+        z-index: 30;
+    }
+    .home-sheet a {
+        color: var(--ink-70);
+        padding: 12px 0;
+    }
+
+    .home-hero {
+        position: absolute;
+        top: 46%;
+        bottom: 52px; /* clear the footer row */
+        left: 0;
+        right: 0;
+        width: auto;
+        padding: 22px 20px 8px;
+        gap: 16px;
+        overflow: hidden;
+    }
+    .home-eyebrow {
+        font-size: 10.5px;
+    }
+    .home-h1 {
+        font-size: 42px;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+    }
+    .home-h1 span {
+        display: block;
+    }
+    .home-lead {
+        font-size: 15.5px;
+    }
+    .home-install {
+        width: 100%;
+        justify-content: space-between;
+        font-size: 14px;
+    }
+    .home-cta {
+        gap: 10px;
+    }
+    .home-install code {
+        padding: 12px 14px;
+    }
+    .home-buttons {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .home-buttons .home-btn-primary {
+        width: 100%;
+        height: 46px;
+        padding: 0 22px;
+        justify-content: center;
+    }
+    .home-buttons .home-btn-secondary,
+    .home-buttons .home-btn-tertiary {
+        flex: 1;
+        height: 46px;
+        padding: 0;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .home-footer {
+        height: 52px;
+        padding: 0 20px;
+        font-size: 11px;
+        background: rgba(11, 10, 9, 0.9);
+    }
+    .home-footer .d-only {
+        display: none;
+    }
+
+    .home-leva {
+        display: none;
+    }
+    .home-exit {
+        left: 20px;
+    }
+}

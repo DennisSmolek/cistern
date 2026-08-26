@@ -160,24 +160,6 @@ export const Pipeline = ({ ref, children }: PipelineProps) => {
     return <PipelineContext.Provider value={contextValue}>{children}</PipelineContext.Provider>;
 };
 
-/**
- * Recursively processes the children of the PostProcessing component,
- * passing each valid React element to the provided processPass function.
- *
- * @param children - The children prop from PostProcessing
- * @param processPass - A function that receives each valid React element child
- */
-function processChildrenPasses(
-    children: React.ReactNode,
-    processPass: (child: React.ReactElement) => void,
-) {
-    // React.Children.forEach handles arrays, fragments, etc.
-    React.Children.forEach(children, (child) => {
-        // Only process valid React elements (not strings, numbers, etc.)
-        if (React.isValidElement(child)) processPass(child);
-    });
-}
-
 const getColorTextureNode = (node: ColorNode): TextureNode => {
     const n = node as unknown as {
         getTextureNode?: () => TextureNode;

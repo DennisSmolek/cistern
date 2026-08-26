@@ -257,8 +257,11 @@ confirm `{ phase: 'render' }` actually replaces the default loop the way
       9-or-10-alpha; exported types; fixed metadata). *(Subsumes D-16.)*
       Confirm `NPM_TOKEN`/`GH_PAT` secrets are still valid; merge Version PR;
       CI publishes with provenance
-- [ ] **P-10** [BLOCKED by P-09] [CODE] After 0.2.0 is live: `npm deprecate`
-      all three 0.1.0s with "use >=0.2.0" messages
+- [x] **P-10** ~~`npm deprecate` all three 0.1.0s with "use >=0.2.0" messages~~
+      — skipped by decision 2026-08-26: no users yet, and 0.2.0 is `latest` so
+      fresh installs never see 0.1.0. (Note: 0.2.0 published 2026-08-26 via npm
+      **Trusted Publishing/OIDC** — the old NPM_TOKEN was a sunset classic token
+      and is no longer used.)
 
 ---
 
@@ -372,44 +375,56 @@ Final "done" bar for the whole code lane:
 
 ---
 
-## Lane 2 — Homescreen redesign [DEFERRED — future Claude Design session]
+## Lane 2 — Homescreen redesign [LANDED 2026-08-25]
 
-Current state of `apps/docs-astro/src/pages/index.astro`: 13 lines, a full-bleed
-`<Fiber />` R3F canvas at 100vw/100vh with a leva control panel and a floating
-150px lightblue `<View>` box. No nav, no wordmark, no copy, no CTA, no mobile story.
-Background is hardcoded `#1a1a1a`.
-
-Kept verbatim as the spec for this future phase. **Note: H-12 (remove the
-`<View>` debug box) is done early, in Phase 3 of the code lane** — see above.
-Everything else here is untouched and still pending.
+Implemented from the Claude Design handoff (`design_handoff_cistern_homepage/README.md`,
+screens 1a desktop / 1c mobile) as `src/components/home/` (Home shell + tokens CSS +
+CameraRig + ExportPanel + valtio `homeState`), layered over the existing `<Fiber>` scene.
+Fonts (Archivo, IBM Plex Mono) self-hosted via Fontsource. The accent is a single
+`--accent` token in `home.css` (currently a darker blue, `#5b7fd6`; alphas derive via
+`color-mix`) — **palette play is an open follow-up, swap is a one-line change**.
 
 ### 2a. Design [DESIGN — Claude Design]
 
-- [ ] **H-01** [DEC] Decide what `/` **is**: marketing landing page with the 3D scene as
-      hero, or a full-screen live demo with minimal chrome overlaid?
-- [ ] **H-02** Visual identity — wordmark/logo, type scale, palette. Anchor off the
-      existing `#1a1a1a` or replace it
-- [ ] **H-03** Hero composition: canvas treatment, headline, tagline
-      (README's is "Geometry toolkit for round galleries"), primary/secondary CTAs
-- [ ] **H-04** Nav overlay: Docs · Examples · GitHub · npm. Decide light-on-canvas vs solid bar
-- [ ] **H-05** Below-fold sections if H-01 says landing page — features, install snippet,
-      package list (`@cistern/core`, `/camera`, `/r3f`)
-- [ ] **H-06** Mobile + responsive layout, incl. what replaces the canvas on small screens
-- [ ] **H-07** WebGPU fallback state — what a non-WebGPU browser sees. Currently: nothing
-- [ ] **H-08** Loading state for the canvas (it's `client:only="react"`, so first paint is empty)
-- [ ] **H-09** Export handoff spec (tokens, spacing, states) for Lane 2b
+- [x] **H-01** `/` is a landing page with the live scene as full-bleed hero (edit-live
+      mode turns it into the full-screen demo — both, mode-switched)
+- [x] **H-02** Visual identity from the handoff: two-ring mark, Archivo/Plex Mono type
+      scale, `#0b0a09`/`#141210`/`#f2ede6` + accent palette
+- [x] **H-03** Hero lockup per spec (eyebrow / H1 / lead / install pill / CTA row)
+- [x] **H-04** Transparent overlay nav: Docs · Changelog (→ GitHub releases) · GitHub +
+      version chip (reads `@cistern/core` version at build time)
+- [x] **H-05** Single-viewport page by design — no below-fold sections
+- [x] **H-06** Mobile: canvas band top 46%, stacked content pane, hamburger sheet,
+      leva hidden < 768px
+- [x] **H-07** WebGPU fallback: shell renders over flat `#141210`, no canvas, no error
+- [x] **H-08** Loading state: flat `#141210` under the shell until the canvas mounts
+- [x] **H-09** Handoff spec delivered externally (`design_handoff_cistern_homepage/`)
 
-### 2b. Implementation [CODE — blocked by H-09]
+### 2b. Implementation [CODE]
 
-- [ ] **H-10** Rebuild `src/pages/index.astro` from the handoff spec
-- [ ] **H-11** Hide the leva panel in production builds (currently always visible on `/`)
+- [x] **H-10** `index.astro` rebuilt from the handoff (proper document + `<Home>`)
+- [x] **H-11** ~~Hide leva in production~~ — superseded: leva is now part of the design
+      (collapsed top-right; expands in edit-live mode with an Export panel below it)
 - [x] **H-12** ~~Remove or repurpose the floating lightblue `<View index={2}>` debug box in `Fiber.tsx`~~
       — done early, Phase 3 (F-01) of the code lane (see checklist above)
-- [ ] **H-13** Move the hardcoded `backgroundColor: '#1a1a1a'` into a shared design token
-- [ ] **H-14** Implement the WebGPU fallback + canvas loading state (H-07, H-08)
-- [ ] **H-15** Accessibility pass — focus order over the canvas, contrast on overlay text,
-      `prefers-reduced-motion` for the animated scene
+- [x] **H-13** Background moved to tokens (`--bg-page` / `--bg-canvas`, default `#141210`
+      wired into the leva Scene control)
+- [x] **H-14** WebGPU fallback + loading state implemented (H-07/H-08)
+- [x] **H-15** Focus-visible rings on all links/buttons; `prefers-reduced-motion` snaps
+      the camera rig instead of easing; overlay contrast per handoff scrim
 - [ ] **H-16** Lighthouse / bundle check — the canvas must not block first paint
+
+### 2c. Edit-live + rendering (added 2026-08-25)
+
+- [x] **H-17** "Edit live" mode: hero/scrim/footer hide, camera pulls out and re-centers
+      (`CameraRig`), leva expands, `← Back` exits
+- [x] **H-18** Export panel below leva (edit mode): download the current cistern as a
+      **GLB** (geometry under a standard material) or as **code** (a `.ts` file with the
+      live `CisternConfig` + `new CisternGeometry(config)`)
+- [x] **H-19** Replaced GTAO/TRAA postprocessing with **SSGI + FSR3**
+      (`@pmndrs/upscaler`): reduced-res G-buffer graph, SSGI (static pattern) +
+      spatial denoise, `beauty·AO + albedo·GI` composite, FSR3 as sole temporal
+      resolver + upscaler (`FSRPipeline.tsx`; deleted `AOPass`/`TRAAPass`/`PPDemo`/`AOEffect`)
 
 ---
 

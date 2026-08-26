@@ -9,7 +9,6 @@ import type {
     PerspectiveCamera,
     Node as ThreeNode,
     PropertyNode,
-    VarNode,
 } from 'three/webgpu';
 
 type Vel = typeof velocity;
