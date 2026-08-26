@@ -1,6 +1,6 @@
 {
     "name": "@cistern/camera",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "CisternCameraControls — camera-controls subclass with cistern-aware collision/boundaries for galleries in the round",
     "keywords": [
         "three",

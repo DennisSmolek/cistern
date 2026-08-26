@@ -1,6 +1,6 @@
 {
     "name": "@cistern/core",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Core geometry toolkit for galleries in the round — CisternGeometry (profile-revolution BufferGeometry with sectional attributes) and TSL/WebGPU CisternMaterial",
     "keywords": [
         "three",
