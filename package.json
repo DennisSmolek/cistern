@@ -19,7 +19,7 @@
         "format": "prettier -w .",
         "changeset": "changeset",
         "release:version": "changeset version && pnpm install --no-frozen-lockfile",
-        "release:publish": "pnpm -r build && pnpm publish -r --access public --no-git-checks && changeset tag"
+        "release:publish": "pnpm -r build && pnpm publish -r --access public --no-git-checks && changeset git-tag && git push origin --tags"
     },
     "devDependencies": {
         "@changesets/cli": "^3.0.1",
