@@ -11,6 +11,7 @@ import { useRef, useMemo } from 'react';
 import { useControls } from 'leva';
 import type { Mesh } from 'three/webgpu';
 import { palette } from '../home/palette';
+import { CisternFrame } from './CisternFrame';
 
 //* ChangingCistern: Passes standard mesh props to Cistern
 export const ChangingCistern = ({
@@ -21,18 +22,22 @@ export const ChangingCistern = ({
   ...props
 }: ThreeElements['group']) => {
   const meshRef = useRef<Mesh>(null);
-  const wireFrameRef = useRef<Mesh>(null);
 
   // right now just a single config
   const config = useMemo(() => getConfig(), []);
 
-  //* Isolation toggles — the two meshes are coincident, so being able to kill
-  //* one is the only way to tell whose shading is misbehaving.
-  const { solid, wireframe } = useControls(
+  //* Isolation toggles + frame density, so the shell and the lines can be
+  //* judged (and tuned) independently under the temporal upscaler.
+  const { solid, frame, meridians, rings, linewidth, lineColor } = useControls(
     'Changing Cistern',
     {
       solid: { label: 'Solid mesh', value: true },
-      wireframe: { label: 'Wireframe', value: true },
+      frame: { label: 'Frame lines', value: true },
+      meridians: { label: 'Meridians', value: 8, min: 0, max: 32, step: 1 },
+      // 3 = widest point + top + bottom; raise it for section boundaries.
+      rings: { label: 'Rings', value: 3, min: 0, max: 8, step: 1 },
+      linewidth: { label: 'Line width (px)', value: 2, min: 1, max: 6, step: 0.5 },
+      lineColor: { label: 'Line color', value: palette.frameLine },
     },
     { collapsed: true },
   );
@@ -42,21 +47,19 @@ export const ChangingCistern = ({
       <CisternMesh ref={meshRef} config={config} visible={solid}>
         <meshStandardMaterial color={palette.complementSoft} />
       </CisternMesh>
-      {/* Coincident with the solid shell above, so it needs a depth bias, or
-          the depth test picks a winner per pixel and the lines show whatever
-          the shell is doing. polygonOffset biases depth only, not position.
-          Opaque + unlit on purpose: `transparent` never blends in the MRT pass
-          anyway (mrt() defaults every attachment to NoBlending), and a lit
-          black line still carries dielectric specular that aliases at 1px. */}
-      <CisternMesh ref={wireFrameRef} config={config} visible={wireframe}>
-        <meshBasicMaterial
-          color="black"
-          wireframe
-          polygonOffset
-          polygonOffsetFactor={-2}
-          polygonOffsetUnits={-4}
+      {/* Sparse fat-line frame rather than `wireframe: true` — see CisternFrame
+          for why the full lattice can't survive a 1/2-res temporal upscale.
+          Sits proud of the shell by construction (it traces the profile), so
+          it needs no depth bias. */}
+      {frame && (
+        <CisternFrame
+          config={config}
+          meridians={meridians}
+          rings={rings}
+          linewidth={linewidth}
+          color={lineColor}
         />
-      </CisternMesh>
+      )}
     </group>
   );
 };

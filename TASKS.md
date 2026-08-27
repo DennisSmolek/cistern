@@ -439,6 +439,13 @@ Fonts (Archivo, IBM Plex Mono) self-hosted via Fontsource. The accent is a singl
       denoise options, AO scaled back off direct light, FSR3 debug views +
       runtime settings exposed in leva. Thin-feature lock interaction filed
       upstream as pmndrs/upscaler#17 — tracked there, not here
+- [x] **H-23** Replaced the ChangingCistern wireframe with `CisternFrame`: a
+      sparse fat-line (`LineSegments2`) frame built from the lathe profile —
+      meridians + rings ranked by feature (widest point, ends, then section
+      boundaries). Fixes the thin-feature boil locally: `wireframe: true` draws
+      a lattice denser than the pixel grid at 1/2 render scale, and a 1px line
+      is sub-pixel there regardless of density. Sparse geometry kills the
+      lattice, 2px screen-space width kills the sub-pixel feature
 
 ---
 

@@ -30,6 +30,8 @@ export interface Palette {
     /** Complementary accents: the floating objects. */
     complement: string;
     complementSoft: string;
+    /** Structural frame lines over `complementSoft` — readable, not harsh. */
+    frameLine: string;
 }
 
 export function generatePalette(hue: number = Math.random() * 360): Palette {
@@ -45,6 +47,7 @@ export function generatePalette(hue: number = Math.random() * 360): Palette {
         backdrop: hslToHex(h, 20, 30),
         complement: hslToHex(h2, 62, 60),
         complementSoft: hslToHex(h2, 38, 72),
+        frameLine: hslToHex(h2, 30, 42),
     };
 }
 
