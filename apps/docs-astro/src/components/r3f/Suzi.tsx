@@ -15,7 +15,7 @@ import { palette } from '../home/palette';
 type SuziMaterial = 'clay' | 'chrome' | 'glass' | 'normals' | 'original';
 
 export const Suzi = forwardRef<Mesh, ThreeElements['mesh']>((props, meshRef) => {
-  const { nodes } = useGLTF('./models/suzimatholder.glb');
+  const { nodes } = useGLTF('/models/suzimatholder.glb');
 
   const { mesh, original } = useMemo(() => {
     const mesh = nodes.Suzanne as Mesh;

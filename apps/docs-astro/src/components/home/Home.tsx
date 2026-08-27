@@ -102,20 +102,22 @@ export default function Home({ version }: HomeProps) {
             )}
 
             <section className="home-hero">
-                <span className="home-eyebrow d-only">Three.js geometry · mid-renovation</span>
+                <span className="home-eyebrow d-only">Three.js geometry · WebGPU / TSL</span>
                 <span className="home-eyebrow m-only">Parametric round geometry</span>
                 <h1 className="home-h1">
                     cistern<span>.studio</span>
                 </h1>
-                <p className="home-lead d-only">
-                    Pass it a few params and it hands back a round geometry that already knows
-                    about panel materials and where its UVs went. The renderer is a work in
-                    progress. The geometry isn&rsquo;t.
-                </p>
-                <p className="home-lead m-only">
-                    A few params in, a cylinder out — panel materials and sane UVs included.
-                    Renderer still under scaffolding.
-                </p>
+                <div className="home-say">
+                    <p className="home-lead d-only">
+                        Type a radius, get architecture — pedestal, corners, soffit,
+                        skylight, every section addressable, every UV where you left it.
+                    </p>
+                    <p className="home-lead m-only">
+                        Type a radius, get architecture — every section addressable, every
+                        UV where you left it.
+                    </p>
+                    <p className="home-note">Caution: Materials still WIP</p>
+                </div>
                 <div className="home-cta">
                     <div className="home-install">
                         <code>
@@ -179,10 +181,14 @@ export default function Home({ version }: HomeProps) {
                         </svg>
                     </button>
                 )}
+                {/* Export sits above Leva: an expanded panel is tall enough to
+                    push anything below it off the bottom of the viewport. */}
+                {editMode && <ExportPanel />}
                 {/* Always mounted (an unmounted Leva re-mounts its own floating
                     default panel); the gear/edit mode toggles visibility. */}
-                <Leva fill collapsed={false} hidden={!panelOpen} />
-                {editMode && <ExportPanel />}
+                <div className="home-leva-scroll">
+                    <Leva fill collapsed={false} hidden={!panelOpen} />
+                </div>
             </div>
             {editMode && (
                 <button

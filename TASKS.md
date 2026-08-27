@@ -425,6 +425,20 @@ Fonts (Archivo, IBM Plex Mono) self-hosted via Fontsource. The accent is a singl
       (`@pmndrs/upscaler`): reduced-res G-buffer graph, SSGI (static pattern) +
       spatial denoise, `beauty·AO + albedo·GI` composite, FSR3 as sole temporal
       resolver + upscaler (`FSRPipeline.tsx`; deleted `AOPass`/`TRAAPass`/`PPDemo`/`AOEffect`)
+- [x] **H-20** Homepage camera: cursor parallax in hero mode (damped yaw/lift +
+      idle drift, `prefers-reduced-motion` aware), and `CisternCamera`
+      (`makeDefault`) actually mounted so edit mode hands off to real orbit
+      controls — `state.controls` was previously always `null`, so the handoff
+      in `CameraRig` could never fire
+- [x] **H-21** Hero copy reads as shipped, with the WIP scoped to a separate
+      note line (materials/slot system, not the renderer — H-19 landed).
+      Export panel moved above Leva + `box-sizing` fix so it stays reachable
+- [x] **H-22** Realigned the SSGI graph with upstream `10-ssgi-denoise`:
+      `useTemporalFiltering` ON (it rotates the sampling pattern for a
+      downstream resolver — it is not a temporal stage), spatial-only GI
+      denoise options, AO scaled back off direct light, FSR3 debug views +
+      runtime settings exposed in leva. Thin-feature lock interaction filed
+      upstream as pmndrs/upscaler#17 — tracked there, not here
 
 ---
 
